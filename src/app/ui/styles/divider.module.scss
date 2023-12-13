@@ -1,0 +1,28 @@
+.parttop {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: var(--main);
+  width: 100%;
+  padding: 20vh 0 0 0;
+  height: 60%;
+  position: absolute;
+}
+.partbot {
+  height: 50%;
+  clip-path: polygon(0 20%, 100% 0, 100% 100%, 0 100%);
+  background-color: var(--main2);
+  position: absolute;
+  bottom: 5vh;
+  width: 100%;
+}
+
+.view {
+  height: 100%;
+}
+
+@media (max-width: 768px) {
+  .parttop {
+    padding: 5vh 0 0 0;
+  }
+}

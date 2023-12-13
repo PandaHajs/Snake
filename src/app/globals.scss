@@ -1,0 +1,25 @@
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+body {
+  height: 100%;
+}
+Header,
+Footer {
+  height: 6vh;
+  z-index: 20;
+}
+
+Header {
+  top: 0px;
+  position: sticky;
+}
+
+Footer {
+  position: fixed;
+  width: 100%;
+  bottom: 0;
+}

@@ -1,0 +1,26 @@
+.footer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: var(--main2);
+  font-size: large;
+  color: gray;
+}
+
+@media (768px <= width <= 1024px) {
+  .footer {
+    font-size: x-large;
+  }
+}
+
+@media (1024px <= width <= 1440px) {
+  .footer {
+    font-size: x-large;
+  }
+}
+
+@media (width > 1920px) {
+  .footer {
+    font-size: xx-large;
+  }
+}
