@@ -6,13 +6,13 @@ export default function Snake() {
   const [ctx, setCtx] = useState<CanvasRenderingContext2D | null>(null);
   const [score, setScore] = useState<number>(0);
   const [play, setPlay] = useState<boolean>(false);
-  const fps: number = 30;
+  const fps: number = 15;
 
   const head = useMemo(
     () => ({
-      x: 280,
-      y: 280,
-      radius: 20,
+      x: 250,
+      y: 250,
+      radius: 50,
       color: "white",
       vx: 0,
       vy: 0,
@@ -22,33 +22,33 @@ export default function Snake() {
 
   const food = useMemo(
     () => ({
-      x: roundNearest5(Math.random() * 600),
-      y: roundNearest5(Math.random() * 600),
-      radius: 20,
+      x: roundNearest50(Math.random() * 550),
+      y: roundNearest50(Math.random() * 550),
+      radius: 50,
       color: "red",
     }),
     []
   );
 
-  function roundNearest5(num: number) {
-    return Math.round(num / 20) * 20;
+  function roundNearest50(num: number) {
+    return Math.round(num / 50) * 50;
   }
 
   function start(event: React.KeyboardEvent) {
     if (event.key === "ArrowUp") {
-      head.vy = -20;
+      head.vy = -50;
       head.vx = 0;
     }
     if (event.key === "ArrowDown") {
-      head.vy = 20;
+      head.vy = 50;
       head.vx = 0;
     }
     if (event.key === "ArrowLeft") {
-      head.vx = -20;
+      head.vx = -50;
       head.vy = 0;
     }
     if (event.key === "ArrowRight") {
-      head.vx = 20;
+      head.vx = 50;
       head.vy = 0;
     }
     if (event.code === "Space") {
@@ -74,16 +74,16 @@ export default function Snake() {
       if (ctx) {
         ctx.clearRect(0, 0, 600, 600);
         ctx.fillStyle = head.color;
-        if (head.x + head.vx > 580 || head.x + head.vx < 0) head.vx = -head.vx;
-        if (head.y + head.vy > 580 || head.y + head.vy < 0) head.vy = -head.vy;
+        if (head.x + head.vx > 550 || head.x + head.vx < 0) head.vx = -head.vx;
+        if (head.y + head.vy > 550 || head.y + head.vy < 0) head.vy = -head.vy;
         ctx.fillRect(head.x, head.y, head.radius, head.radius);
         head.x += head.vx;
         head.y += head.vy;
         ctx.fillStyle = food.color;
         ctx.fillRect(food.x, food.y, food.radius, food.radius);
         if (head.x === food.x && head.y === food.y) {
-          food.x = roundNearest5(Math.random() * 600);
-          food.y = roundNearest5(Math.random() * 600);
+          food.x = roundNearest50(Math.random() * 550);
+          food.y = roundNearest50(Math.random() * 550);
           setScore((score) => score + 1);
         }
         if (play) {
