@@ -1,4 +1,5 @@
 "use client";
+import { constants } from "crypto";
 import { useEffect, useState, useRef, useMemo } from "react";
 
 export default function Snake() {
@@ -58,7 +59,6 @@ export default function Snake() {
     ctx.fillStyle = head.color;
     ctx.fillRect(head.x, head.y, head.radius, head.radius);
   }
-  const canvas = document.querySelector("canvas");
 
   function gameOver() {
     setScore(0);
@@ -72,6 +72,7 @@ export default function Snake() {
     return alert("Game Over");
   }
   useEffect(() => {
+    const canvas = document.querySelector("canvas");
     canvas?.focus();
     if (canvasRef.current) setCtx(canvasRef.current.getContext("2d"));
 
@@ -140,7 +141,7 @@ export default function Snake() {
         }, 1000 / fps);
       }
     }
-  }, [ctx, fps, score, head, food, play, canvas, tail]);
+  }, [ctx, fps, score, head, food, play, tail]);
 
   return (
     <div>
