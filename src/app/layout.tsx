@@ -3,9 +3,10 @@ import "./globals.scss";
 import "@/app/ui/styles/variables.scss";
 import Footer from "@/app/ui/footer";
 import { lato } from "./lib/fonts";
+import { Analytics } from "@vercel/analytics/react";
 
 export const metadata: Metadata = {
-  title: "Snake",
+  title: "Snake | Skowronski",
   description: "A simple snake game",
   authors: [
     {
@@ -38,6 +39,7 @@ export default function RootLayout({
         {children}
         <Footer />
       </body>
+      <Analytics />
     </html>
   );
 }

@@ -1,5 +1,4 @@
 "use client";
-import { constants } from "crypto";
 import { useEffect, useState, useRef, useMemo } from "react";
 
 export default function Snake() {
@@ -7,8 +6,8 @@ export default function Snake() {
   const [ctx, setCtx] = useState<CanvasRenderingContext2D | null>(null);
   const [score, setScore] = useState<number>(0);
   const [play, setPlay] = useState<boolean>(false);
-  const [highScore, setHighScore] = useState<number>(0);
-  const fps: number = 10;
+  let highScoreTest = useRef(0);
+  const fps = useRef(5);
   let tail: { x: number; y: number }[] = [];
 
   const head = useMemo(
@@ -62,6 +61,7 @@ export default function Snake() {
 
   function gameOver() {
     setScore(0);
+    highScoreTest.current = 0;
     head.x = 250;
     head.y = 250;
     head.vx = 0;
@@ -72,6 +72,9 @@ export default function Snake() {
     return alert("Game Over");
   }
   useEffect(() => {
+    const highScore = localStorage.getItem("highScore") || "0";
+    document.getElementById("test")!.innerHTML = "High score: " + highScore;
+
     const canvas = document.querySelector("canvas");
     canvas?.focus();
     if (canvasRef.current) setCtx(canvasRef.current.getContext("2d"));
@@ -129,16 +132,17 @@ export default function Snake() {
           );
 
           setScore((score) => score + 1);
-          console.log(score + " " + highScore);
-          if (score > highScore) {
-            setHighScore(score);
+          highScoreTest.current += 1;
+          fps.current += 0.05;
+          if (highScoreTest.current > parseInt(highScore)) {
+            localStorage.setItem("highScore", highScoreTest.current.toString());
           }
           nextPositions.unshift({ x: head.x, y: head.y });
         }
 
         setTimeout(() => {
           requestAnimationFrame(draw);
-        }, 1000 / fps);
+        }, 1000 / fps.current);
       }
     }
   }, [ctx, fps, score, head, food, play, tail]);
@@ -146,7 +150,7 @@ export default function Snake() {
   return (
     <div>
       <p>Score: {score}</p>
-      <p>High score: {highScore}</p>
+      <p id="test">High score:</p>
       <canvas
         tabIndex={0}
         ref={canvasRef}
