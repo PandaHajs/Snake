@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState, useRef, useMemo } from "react";
+import style from "./styles/snake.module.scss";
 
 export default function Snake() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -7,7 +8,7 @@ export default function Snake() {
   const [score, setScore] = useState<number>(0);
   const [play, setPlay] = useState<boolean>(false);
   let highScoreTest = useRef(0);
-  const fps = useRef(5);
+  const fps = useRef(6);
   let tail: { x: number; y: number }[] = [];
 
   const head = useMemo(
@@ -69,14 +70,14 @@ export default function Snake() {
     tail = [];
     food.x = roundNearest50(Math.random() * 550);
     food.y = roundNearest50(Math.random() * 550);
-    return alert("Game Over");
   }
   useEffect(() => {
     const highScore = localStorage.getItem("highScore") || "0";
-    document.getElementById("test")!.innerHTML = "High score: " + highScore;
+    document.querySelector("#highScore")!.innerHTML =
+      "High Score: " + highScore;
 
     const canvas = document.querySelector("canvas");
-    canvas?.focus();
+
     if (canvasRef.current) setCtx(canvasRef.current.getContext("2d"));
 
     canvas?.addEventListener("keydown", draw);
@@ -88,6 +89,7 @@ export default function Snake() {
         if (play) {
           return;
         }
+
         ctx.clearRect(0, 0, 600, 600);
         ctx.fillStyle = head.color;
 
@@ -148,16 +150,20 @@ export default function Snake() {
   }, [ctx, fps, score, head, food, play, tail]);
 
   return (
-    <div>
-      <p>Score: {score}</p>
-      <p id="test">High score:</p>
-      <canvas
-        tabIndex={0}
-        ref={canvasRef}
-        width="600"
-        height="600"
-        onKeyDown={start}
-      />
+    <div className={style.snake}>
+      <div className={style.score}>
+        <p>Score: {score}</p>
+        <p id="highScore">High Score: 0</p>
+      </div>
+      <div>
+        <canvas
+          tabIndex={0}
+          ref={canvasRef}
+          width="600"
+          height="600"
+          onKeyDown={start}
+        />
+      </div>
     </div>
   );
 }
