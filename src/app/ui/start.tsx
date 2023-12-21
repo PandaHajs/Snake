@@ -4,9 +4,12 @@ import { useState } from "react";
 
 export default function Start() {
   const [started, setStarted] = useState<boolean>(false);
-  if (started) {
+  const [check, setCheck] = useState<boolean>(false);
+  if (started && !check) {
     const canvas = document.querySelector("canvas");
     canvas?.focus();
+    setCheck(true);
+    console.log("check");
   }
 
   return (

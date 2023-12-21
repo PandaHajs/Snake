@@ -1,5 +1,7 @@
 "use client";
 import { useEffect, useState, useRef, useMemo } from "react";
+import Restart from "./restart";
+import Start from "./start";
 import style from "./styles/snake.module.scss";
 
 export default function Snake() {
@@ -7,6 +9,7 @@ export default function Snake() {
   const [ctx, setCtx] = useState<CanvasRenderingContext2D | null>(null);
   const [score, setScore] = useState<number>(0);
   const [play, setPlay] = useState<boolean>(false);
+  const [over, setOver] = useState<boolean>(false);
   let highScoreTest = useRef(0);
   const fps = useRef(6);
   let tail: { x: number; y: number }[] = [];
@@ -70,6 +73,13 @@ export default function Snake() {
     tail = [];
     food.x = roundNearest50(Math.random() * 550);
     food.y = roundNearest50(Math.random() * 550);
+    setOver(true);
+  }
+
+  function restart() {
+    setOver(false);
+    const canvas = document.querySelector("canvas");
+    canvas?.focus();
   }
   useEffect(() => {
     const highScore = localStorage.getItem("highScore") || "0";
@@ -105,6 +115,7 @@ export default function Snake() {
         ) {
           gameOver();
           nextPositions = [];
+          canvas?.blur();
         }
         head.x += head.vx;
         head.y += head.vy;
@@ -118,6 +129,7 @@ export default function Snake() {
 
           if (head.x === part.x && head.y === part.y) {
             gameOver();
+            canvas?.blur();
             nextPositions = [];
           }
         });
@@ -163,6 +175,8 @@ export default function Snake() {
           height="600"
           onKeyDown={start}
         />
+        <Restart onClick={restart} over={over} />
+        <Start />
       </div>
     </div>
   );
