@@ -39,8 +39,13 @@ export default function Snake() {
   function roundNearest50(num: number) {
     return Math.round(num / 50) * 50;
   }
+  function restart() {
+    setOver(false);
+    const canvas = document.querySelector("canvas");
+    canvas?.focus();
+  }
 
-  function start(event: React.KeyboardEvent) {
+  function snakeLogic(event: React.KeyboardEvent) {
     if ((event.key === "w" || event.key === "ArrowUp") && head.vy !== 50) {
       head.vy = -50;
       head.vx = 0;
@@ -76,11 +81,6 @@ export default function Snake() {
     setOver(true);
   }
 
-  function restart() {
-    setOver(false);
-    const canvas = document.querySelector("canvas");
-    canvas?.focus();
-  }
   useEffect(() => {
     const highScore = localStorage.getItem("highScore") || "0";
     document.querySelector("#highScore")!.innerHTML =
@@ -173,7 +173,7 @@ export default function Snake() {
           ref={canvasRef}
           width="600"
           height="600"
-          onKeyDown={start}
+          onKeyDown={snakeLogic}
         />
         <Restart onClick={restart} over={over} />
         <Start />

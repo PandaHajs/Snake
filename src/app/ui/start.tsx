@@ -14,8 +14,10 @@ export default function Start() {
 
   return (
     <div className={started ? style.hid : style.start}>
-      <h2>Snake Game</h2>
-      <button onClick={() => setStarted(true)}>Start game</button>
+      <h2>A Simple Snake Game</h2>
+      <button className={style.btn} onClick={() => setStarted(true)}>
+        Start
+      </button>
     </div>
   );
 }

@@ -10,7 +10,9 @@ const Restart: React.FC<MyComponentProps> = ({ over, onClick }) => {
   return (
     <div className={over ? style.start : style.hid}>
       <h2>Game over!</h2>
-      <button onClick={onClick}>Restart the game</button>
+      <button className={style.btn} onClick={onClick}>
+        Restart the game
+      </button>
     </div>
   );
 };
