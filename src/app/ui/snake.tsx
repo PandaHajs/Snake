@@ -82,11 +82,10 @@ export default function Snake() {
   }
 
   useEffect(() => {
+    const canvas = document.querySelector("canvas");
     const highScore = localStorage.getItem("highScore") || "0";
     document.querySelector("#highScore")!.innerHTML =
       "High Score: " + highScore;
-
-    const canvas = document.querySelector("canvas");
 
     if (canvasRef.current) setCtx(canvasRef.current.getContext("2d"));
 
@@ -94,6 +93,9 @@ export default function Snake() {
 
     function draw() {
       setPlay(true);
+      const highScore = localStorage.getItem("highScore") || "0";
+      document.querySelector("#highScore")!.innerHTML =
+        "High Score: " + highScore;
       canvas?.removeEventListener("keydown", draw);
       if (ctx) {
         if (play) {

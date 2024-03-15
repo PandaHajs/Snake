@@ -9,7 +9,6 @@ export default function Start() {
     const canvas = document.querySelector("canvas");
     canvas?.focus();
     setCheck(true);
-    console.log("check");
   }
 
   return (
