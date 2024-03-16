@@ -71,6 +71,7 @@ export default function Snake() {
   function gameOver() {
     setScore(0);
     highScoreTest.current = 0;
+    fps.current = 6;
     head.x = 250;
     head.y = 250;
     head.vx = 0;
