@@ -10,8 +10,10 @@ export default function Snake() {
   const [score, setScore] = useState<number>(0);
   const [play, setPlay] = useState<boolean>(false);
   const [over, setOver] = useState<boolean>(false);
-  let highScore = localStorage.getItem("highScore") || "0";
-  const [update, setUpdate] = useState<string>(highScore);
+  let highScore: string = "0";
+  if (typeof window !== "undefined")
+    highScore = localStorage.getItem("highScore") || "0";
+
   let highScoreTest = useRef(0);
   const fps = useRef(6);
   let tail: { x: number; y: number }[] = [];
@@ -149,6 +151,7 @@ export default function Snake() {
           fps.current += 0.05;
           if (highScoreTest.current > parseInt(highScore)) {
             localStorage.setItem("highScore", highScoreTest.current.toString());
+            // eslint-disable-next-line react-hooks/exhaustive-deps
             highScore = localStorage.getItem("highScore") || "0";
           }
           nextPositions.unshift({ x: head.x, y: head.y });
