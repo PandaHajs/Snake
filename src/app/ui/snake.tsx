@@ -10,6 +10,8 @@ export default function Snake() {
   const [score, setScore] = useState<number>(0);
   const [play, setPlay] = useState<boolean>(false);
   const [over, setOver] = useState<boolean>(false);
+  let highScore = localStorage.getItem("highScore") || "0";
+  const [update, setUpdate] = useState<string>(highScore);
   let highScoreTest = useRef(0);
   const fps = useRef(6);
   let tail: { x: number; y: number }[] = [];
@@ -84,9 +86,6 @@ export default function Snake() {
 
   useEffect(() => {
     const canvas = document.querySelector("canvas");
-    const highScore = localStorage.getItem("highScore") || "0";
-    document.querySelector("#highScore")!.innerHTML =
-      "High Score: " + highScore;
 
     if (canvasRef.current) setCtx(canvasRef.current.getContext("2d"));
 
@@ -94,9 +93,6 @@ export default function Snake() {
 
     function draw() {
       setPlay(true);
-      const highScore = localStorage.getItem("highScore") || "0";
-      document.querySelector("#highScore")!.innerHTML =
-        "High Score: " + highScore;
       canvas?.removeEventListener("keydown", draw);
       if (ctx) {
         if (play) {
@@ -153,6 +149,7 @@ export default function Snake() {
           fps.current += 0.05;
           if (highScoreTest.current > parseInt(highScore)) {
             localStorage.setItem("highScore", highScoreTest.current.toString());
+            highScore = localStorage.getItem("highScore") || "0";
           }
           nextPositions.unshift({ x: head.x, y: head.y });
         }
@@ -168,7 +165,7 @@ export default function Snake() {
     <div className={style.snake}>
       <div className={style.score}>
         <p>Score: {score}</p>
-        <p id="highScore">High Score: 0</p>
+        <p>HighScore: {highScore}</p>
       </div>
       <div>
         <canvas
