@@ -168,7 +168,7 @@ export default function Snake() {
     <div className={style.snake}>
       <div className={style.score}>
         <p>Score: {score}</p>
-        <p>HighScore: {highScore}</p>
+        <p>High Score: {highScore}</p>
       </div>
       <div>
         <canvas
