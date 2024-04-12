@@ -3,20 +3,24 @@ import style from "./styles/start.module.scss";
 import { useState } from "react";
 
 export default function Start() {
-  const [started, setStarted] = useState<boolean>(false);
-  const [check, setCheck] = useState<boolean>(false);
-  if (started && !check) {
-    const canvas = document.querySelector("canvas");
-    canvas?.focus();
-    setCheck(true);
-  }
+	const [started, setStarted] = useState<boolean>(false);
+	const [check, setCheck] = useState<boolean>(false);
+	if (started && !check) {
+		const canvas = document.querySelector("canvas");
+		canvas?.focus();
+		setCheck(true);
+	}
 
-  return (
-    <div className={started ? style.hid : style.start}>
-      <h2>A Simple Snake Game</h2>
-      <button className={style.btn} onClick={() => setStarted(true)}>
-        Start
-      </button>
-    </div>
-  );
+	return (
+		<div className={started ? style.hid : style.start}>
+			<h2>A Simple Snake Game</h2>
+			<button
+				type="button"
+				className={style.btn}
+				onClick={() => setStarted(true)}
+			>
+				Start
+			</button>
+		</div>
+	);
 }
