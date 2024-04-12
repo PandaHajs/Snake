@@ -10,7 +10,7 @@ export default function Snake() {
 	const [score, setScore] = useState<number>(0);
 	const [play, setPlay] = useState<boolean>(false);
 	const [over, setOver] = useState<boolean>(false);
-	let highScore = localStorage.getItem("highScore") || "0";
+	const highScore = useRef<string>("0");
 
 	const highScoreTest = useRef(0);
 	const fps = useRef(6);
@@ -86,7 +86,7 @@ export default function Snake() {
 
 	useEffect(() => {
 		const canvas = document.querySelector("canvas");
-
+		highScore.current = localStorage.getItem("highScore") || "0";
 		if (canvasRef.current) setCtx(canvasRef.current.getContext("2d"));
 
 		canvas?.addEventListener("keydown", draw);
@@ -147,10 +147,10 @@ export default function Snake() {
 					setScore((score) => score + 1);
 					highScoreTest.current += 1;
 					fps.current += 0.05;
-					if (highScoreTest.current > Number.parseInt(highScore)) {
+					if (highScoreTest.current > Number.parseInt(highScore.current)) {
 						localStorage.setItem("highScore", highScoreTest.current.toString());
 						// eslint-disable-next-line react-hooks/exhaustive-deps
-						highScore = localStorage.getItem("highScore") || "0";
+						highScore.current = highScoreTest.current.toString();
 					}
 					nextPositions.unshift({ x: head.x, y: head.y });
 				}
@@ -160,13 +160,13 @@ export default function Snake() {
 				}, 1000 / fps.current);
 			}
 		}
-	}, [ctx, head, food, play, tail, highScore]);
+	}, [ctx, head, food, play, tail]);
 
 	return (
 		<div className={style.snake}>
 			<div className={style.score}>
 				<p>Score: {score}</p>
-				<p>High Score: {highScore}</p>
+				<p>High Score: {highScore.current}</p>
 			</div>
 			<div>
 				<canvas
