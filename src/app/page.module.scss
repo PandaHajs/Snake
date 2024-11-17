@@ -4,17 +4,13 @@
   color: white;
   width: 100%;
   z-index: 1;
-  align-items: center;
-  justify-content: center;
-}
-@media (max-width: 768px) {
+  margin-top: 10vh;
 }
 
-@media (768px <= width < 1024px) {
-}
+@media (max-width: 768px) {}
 
-@media (1024px <= width <= 1440px) {
-}
+@media (768px <=width < 1024px) {}
 
-@media (width > 1920px) {
-}
+@media (1024px <=width <=1440px) {}
+
+@media (width > 1920px) {}

@@ -1,17 +1,16 @@
 import Divider from "./ui/divider";
 import styles from "./page.module.scss";
 import Dock from "./ui/dock";
-import Snake from "./ui/snake";
-
+import SnakeCanvas from "./ui/snakeCanvas";
 export default function Home() {
-  return (
-    <main>
-      <Divider>
-        <section className={styles.sec}>
-          <Dock />
-          <Snake />
-        </section>
-      </Divider>
-    </main>
-  );
+	return (
+		<main>
+			<Divider>
+				<section className={styles.sec}>
+					<Dock />
+					<SnakeCanvas />
+				</section>
+			</Divider>
+		</main>
+	);
 }

@@ -1,4 +1,4 @@
-import styles from "@/app/ui/styles/footer.module.scss";
+import styles from "./styles/footer.module.scss";
 import { currentYear } from "../lib/age";
 
 export default function Footer() {
