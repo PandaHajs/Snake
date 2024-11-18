@@ -1,57 +1,36 @@
 "use client";
-import { use, useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import styles from "./styles/canvas.module.scss";
-
-type snakeHead = {
-	mx: number;
-	my: number;
-	radius: number;
-	color: string;
-};
+import { draw, roundNearest50 } from "../lib/snakeLogic";
+import type { snakeHead, snake } from "../lib/snakeLogic";
 
 export default function GameCanvas() {
 	const canvasRef = useRef<HTMLCanvasElement>(null);
 	const [ctx, setCtx] = useState<CanvasRenderingContext2D | null>(null);
-	const move = useRef<string | null>(null);
+	const move = useRef<string>("");
 	const [begin, setBegin] = useState<boolean>(false);
 	const [start, setStart] = useState<boolean>(false);
+	const animation = useRef<NodeJS.Timeout | null>(null);
 	const head = useMemo<snakeHead>(
 		() => ({
-			mx: roundNearest50(Math.random() * 550),
+			mx: roundNearest50(Math.random() * 500),
 			my: roundNearest50(Math.random() * 550),
+			vx: 0,
+			vy: 0,
 			radius: 50,
-			color: "red",
+			color: "white",
 		}),
 		[],
 	);
 
-	function roundNearest50(num: number) {
-		return Math.round(num / 50) * 50;
-	}
-
-	function draw(context: CanvasRenderingContext2D, head: snakeHead) {
-		const direction = move.current;
-		switch (direction) {
-			case "ArrowUp":
-				head.my -= 50;
-				break;
-			case "ArrowDown":
-				head.my += 50;
-				break;
-			case "ArrowLeft":
-				head.mx -= 50;
-				break;
-			case "ArrowRight":
-				head.mx += 50;
-				break;
-		}
-		context.clearRect(0, 0, 600, 600);
-		context.fillStyle = head.color;
-		context.fillRect(head.mx, head.my, head.radius, head.radius);
-		setTimeout(() => {
-			requestAnimationFrame(() => draw(context, head));
-		}, 1000);
-	}
+	const tail = useMemo<snake>(
+		() => ({
+			radius: 50,
+			color: "grey",
+			tail: [{ x: head.mx + 50, y: head.my }],
+		}),
+		[head.mx, head.my],
+	);
 
 	useEffect(() => {
 		document.addEventListener("keydown", (e) => {
@@ -62,9 +41,22 @@ export default function GameCanvas() {
 			setCtx(canvas.getContext("2d"));
 			if (ctx) {
 				if (start) {
+					move.current = "";
 					setStart(false);
 					setBegin(true);
-					requestAnimationFrame(() => draw(ctx, head));
+					animation.current = setInterval(() => {
+						requestAnimationFrame(() =>
+							draw(
+								tail,
+								animation.current,
+								move.current,
+								ctx,
+								head,
+								setBegin,
+								setStart,
+							),
+						);
+					}, 1000 / 6);
 				}
 			}
 		}
@@ -73,7 +65,7 @@ export default function GameCanvas() {
 				move.current = e.key;
 			});
 		};
-	}, [ctx, move, begin, head, start]);
+	}, [ctx, head, start, tail]);
 
 	return (
 		<div className={styles.mid}>
