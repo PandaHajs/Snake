@@ -2,11 +2,11 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import styles from "./styles/canvas.module.scss";
 import { draw, roundNearest50 } from "../lib/snakeLogic";
-import type { snakeHead, snake } from "../lib/snakeLogic";
+import type { snakeHead, snake, food } from "../lib/snakeLogic";
 
 export default function GameCanvas() {
 	const canvasRef = useRef<HTMLCanvasElement>(null);
-	const [ctx, setCtx] = useState<CanvasRenderingContext2D | null>(null);
+	const ctxRef = useRef<CanvasRenderingContext2D | null>(null);
 	const move = useRef<string>("");
 	const [begin, setBegin] = useState<boolean>(false);
 	const [start, setStart] = useState<boolean>(false);
@@ -32,32 +32,41 @@ export default function GameCanvas() {
 		[head.mx, head.my],
 	);
 
+	const food = useMemo<food>(
+		() => ({
+			x: roundNearest50(Math.random() * 500),
+			y: roundNearest50(Math.random() * 500),
+			radius: 50,
+			color: "green",
+		}),
+		[],
+	);
+
 	useEffect(() => {
 		document.addEventListener("keydown", (e) => {
 			move.current = e.key;
 		});
 		const canvas = canvasRef.current;
 		if (canvas) {
-			setCtx(canvas.getContext("2d"));
-			if (ctx) {
-				if (start) {
-					move.current = "";
-					setStart(false);
-					setBegin(true);
-					animation.current = setInterval(() => {
-						requestAnimationFrame(() =>
-							draw(
-								tail,
-								animation.current,
-								move.current,
-								ctx,
-								head,
-								setBegin,
-								setStart,
-							),
-						);
-					}, 1000 / 6);
-				}
+			ctxRef.current = canvas.getContext("2d");
+			if (start && ctxRef.current) {
+				move.current = "";
+				setStart(false);
+				setBegin(true);
+				animation.current = setInterval(() => {
+					requestAnimationFrame(() =>
+						draw(
+							food,
+							tail,
+							animation.current,
+							move.current,
+							ctxRef.current,
+							head,
+							setBegin,
+							setStart,
+						),
+					);
+				}, 1000 / 8);
 			}
 		}
 		return () => {
@@ -65,7 +74,7 @@ export default function GameCanvas() {
 				move.current = e.key;
 			});
 		};
-	}, [ctx, head, start, tail]);
+	}, [head, start, tail, food]);
 
 	return (
 		<div className={styles.mid}>
