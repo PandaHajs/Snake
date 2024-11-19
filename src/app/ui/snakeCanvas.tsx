@@ -49,23 +49,24 @@ export default function GameCanvas() {
 		const canvas = canvasRef.current;
 		if (canvas) {
 			ctxRef.current = canvas.getContext("2d");
-			if (start && ctxRef.current) {
+			if (start) {
 				move.current = "";
 				setStart(false);
 				setBegin(true);
 				animation.current = setInterval(() => {
-					requestAnimationFrame(() =>
-						draw(
-							food,
-							tail,
-							animation.current,
-							move.current,
-							ctxRef.current,
-							head,
-							setBegin,
-							setStart,
-						),
-					);
+					requestAnimationFrame(() => {
+						if (ctxRef.current)
+							draw(
+								food,
+								tail,
+								animation.current,
+								move.current,
+								ctxRef.current,
+								head,
+								setBegin,
+								setStart,
+							);
+					});
 				}, 1000 / 8);
 			}
 		}
