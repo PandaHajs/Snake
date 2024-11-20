@@ -11,6 +11,12 @@ export default function GameCanvas() {
 	const [begin, setBegin] = useState<boolean>(false);
 	const [start, setStart] = useState<boolean>(false);
 	const animation = useRef<NodeJS.Timeout | null>(null);
+	const [score, setScore] = useState<number>(0);
+	const [highScore, setHighScore] = useState<number>(
+		Number.parseInt(window.localStorage.getItem("highScore") || "0"),
+	);
+	const highScoreTest = useRef<number>(0);
+
 	const head = useMemo<snakeHead>(
 		() => ({
 			mx: roundNearest50(Math.random() * 500),
@@ -53,6 +59,10 @@ export default function GameCanvas() {
 				move.current = "";
 				setStart(false);
 				setBegin(true);
+				setScore(0);
+				setHighScore(
+					Number.parseInt(window.localStorage.getItem("highScore") || "0"),
+				);
 				animation.current = setInterval(() => {
 					requestAnimationFrame(() => {
 						if (ctxRef.current)
@@ -65,6 +75,10 @@ export default function GameCanvas() {
 								head,
 								setBegin,
 								setStart,
+								setScore,
+								score,
+								setHighScore,
+								highScore,
 							);
 					});
 				}, 1000 / 8);
@@ -75,7 +89,7 @@ export default function GameCanvas() {
 				move.current = e.key;
 			});
 		};
-	}, [head, start, tail, food]);
+	}, [head, start, tail, food, score, highScore]);
 
 	return (
 		<div className={styles.mid}>
@@ -84,6 +98,10 @@ export default function GameCanvas() {
 					Start
 				</button>
 			) : null}
+			<div className={styles.score}>
+				<p>Score: {score}</p>
+				<p>High Score: {highScore}</p>
+			</div>
 			<canvas
 				width="600"
 				height="600"

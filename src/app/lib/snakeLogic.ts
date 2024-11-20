@@ -33,6 +33,10 @@ export function draw(
 	head: snakeHead,
 	setBegin: React.Dispatch<React.SetStateAction<boolean>>,
 	setStart: React.Dispatch<React.SetStateAction<boolean>>,
+	setScore: React.Dispatch<React.SetStateAction<number>>,
+	score: number,
+	setHighScore: React.Dispatch<React.SetStateAction<number>>,
+	highScore: number,
 ) {
 	const illegalStartingMoves = ["ArrowRight", "d", "D"];
 	const legalMoves = [
@@ -85,15 +89,26 @@ export function draw(
 		[food.x, food.y] = respawnFood(head, tail);
 		return;
 	}
+	if (handleFoodCollision(head, food)) {
+		[food.x, food.y] = respawnFood(head, tail);
+		setScore((prev) => {
+			const newScore = prev + 1;
+			if (newScore > highScore) {
+				setHighScore(newScore);
+				window.localStorage.setItem("highScore", newScore.toString());
+			}
+			return newScore;
+		});
+		tail.tail.push({
+			x: tail.tail[tail.tail.length - 1].x,
+			y: tail.tail[tail.tail.length - 1].y,
+		});
+	}
 	context.clearRect(0, 0, 600, 600);
 	context.fillStyle = food.color;
 	context.fillRect(food.x, food.y, food.radius, food.radius);
 	context.fillStyle = head.color;
 	context.fillRect(head.mx, head.my, head.radius, head.radius);
-	if (handleFoodCollision(head, food)) {
-		[food.x, food.y] = respawnFood(head, tail);
-		tail.tail.push({ x: head.mx, y: head.my });
-	}
 	for (const t of tail.tail) {
 		context.fillStyle = tail.color;
 		context.fillRect(t.x, t.y, tail.radius, tail.radius);
