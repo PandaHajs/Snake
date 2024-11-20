@@ -12,9 +12,7 @@ export default function GameCanvas() {
 	const [start, setStart] = useState<boolean>(false);
 	const animation = useRef<NodeJS.Timeout | null>(null);
 	const [score, setScore] = useState<number>(0);
-	const [highScore, setHighScore] = useState<number>(
-		Number.parseInt(localStorage.getItem("highScore") || "0"),
-	);
+	const [highScore, setHighScore] = useState<number>(0);
 
 	const head = useMemo<snakeHead>(
 		() => ({
@@ -48,6 +46,7 @@ export default function GameCanvas() {
 	);
 
 	useEffect(() => {
+		setHighScore(Number.parseInt(localStorage.getItem("highScore") || "0"));
 		document.addEventListener("keydown", (e) => {
 			move.current = e.key;
 		});
