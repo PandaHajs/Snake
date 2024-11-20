@@ -95,7 +95,7 @@ export function draw(
 			const newScore = prev + 1;
 			if (newScore > highScore) {
 				setHighScore(newScore);
-				window.localStorage.setItem("highScore", newScore.toString());
+				localStorage.setItem("highScore", newScore.toString());
 			}
 			return newScore;
 		});

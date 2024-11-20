@@ -13,9 +13,8 @@ export default function GameCanvas() {
 	const animation = useRef<NodeJS.Timeout | null>(null);
 	const [score, setScore] = useState<number>(0);
 	const [highScore, setHighScore] = useState<number>(
-		Number.parseInt(window.localStorage.getItem("highScore") || "0"),
+		Number.parseInt(localStorage.getItem("highScore") || "0"),
 	);
-	const highScoreTest = useRef<number>(0);
 
 	const head = useMemo<snakeHead>(
 		() => ({
@@ -60,9 +59,6 @@ export default function GameCanvas() {
 				setStart(false);
 				setBegin(true);
 				setScore(0);
-				setHighScore(
-					Number.parseInt(window.localStorage.getItem("highScore") || "0"),
-				);
 				animation.current = setInterval(() => {
 					requestAnimationFrame(() => {
 						if (ctxRef.current)
