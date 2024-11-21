@@ -34,10 +34,12 @@ export function draw(
 	setBegin: React.Dispatch<React.SetStateAction<boolean>>,
 	setStart: React.Dispatch<React.SetStateAction<boolean>>,
 	setScore: React.Dispatch<React.SetStateAction<number>>,
-	score: number,
+	positionHistory: { x: number; y: number }[],
+	cumulativeDistances: number[],
 	setHighScore: React.Dispatch<React.SetStateAction<number>>,
 	highScore: number,
 ) {
+	const sSpacing = 50;
 	const illegalStartingMoves = ["ArrowRight", "d", "D"];
 	const legalMoves = [
 		"ArrowLeft",
@@ -58,7 +60,12 @@ export function draw(
 	if (vx === 0 && vy === 0 && !legalMoves.includes(move)) {
 		return;
 	}
-	if ((vx === 0 && vy === 0) || (vx === -head.vx && vy === -head.vy)) {
+	if (
+		(vx === 0 && vy === 0) ||
+		(vx === -head.vx && vy === -head.vy) ||
+		head.mx % 50 !== 0 ||
+		head.my % 50 !== 0
+	) {
 		vx = head.vx;
 		vy = head.vy;
 	}
@@ -109,16 +116,48 @@ export function draw(
 	context.fillRect(food.x, food.y, food.radius, food.radius);
 	context.fillStyle = head.color;
 	context.fillRect(head.mx, head.my, head.radius, head.radius);
-	for (const t of tail.tail) {
-		context.fillStyle = tail.color;
-		context.fillRect(t.x, t.y, tail.radius, tail.radius);
-	}
-	if (move !== "") {
-		tail.tail.unshift({ x: head.mx, y: head.my });
-		tail.tail.pop();
-	}
 	head.mx += head.vx;
 	head.my += head.vy;
+
+	positionHistory.push({ x: head.mx, y: head.my });
+
+	if (positionHistory.length > 3) {
+		const prevIndex = positionHistory.length - 2;
+		const dx = positionHistory[prevIndex + 1].x - positionHistory[prevIndex].x;
+		const dy = positionHistory[prevIndex + 1].y - positionHistory[prevIndex].y;
+		const distance = Math.sqrt(dx * dx + dy * dy);
+		cumulativeDistances.push((cumulativeDistances[prevIndex] || 0) + distance);
+	} else {
+		cumulativeDistances.push(50);
+	}
+
+	const maxDistance = (tail.tail.length + 1) * sSpacing;
+
+	while (
+		cumulativeDistances.length > 0 &&
+		cumulativeDistances[cumulativeDistances.length - 1] -
+			cumulativeDistances[0] >
+			maxDistance
+	) {
+		positionHistory.shift();
+		cumulativeDistances.shift();
+	}
+
+	for (let i = 0; i < tail.tail.length; i++) {
+		const targetDistance = (i + 1) * sSpacing;
+		const totalDistance = cumulativeDistances[cumulativeDistances.length - 1];
+		const targetPosition = totalDistance - targetDistance;
+		let index = cumulativeDistances.findIndex(
+			(distance) => distance >= targetPosition,
+		);
+		if (index === -1) {
+			index = 0;
+		}
+		tail.tail[i].x = positionHistory[index].x;
+		tail.tail[i].y = positionHistory[index].y;
+		context.fillStyle = tail.color;
+		context.fillRect(tail.tail[i].x, tail.tail[i].y, tail.radius, tail.radius);
+	}
 }
 
 function respawnFood(head: snakeHead, tail: snake): [number, number] {
@@ -179,19 +218,19 @@ function handleKey(direction: string | null) {
 		case "ArrowUp":
 		case "w":
 		case "W":
-			return [0, -50];
+			return [0, -5];
 		case "ArrowDown":
 		case "s":
 		case "S":
-			return [0, 50];
+			return [0, 5];
 		case "ArrowLeft":
 		case "a":
 		case "A":
-			return [-50, 0];
+			return [-5, 0];
 		case "ArrowRight":
 		case "d":
 		case "D":
-			return [50, 0];
+			return [5, 0];
 		default:
 			return;
 	}

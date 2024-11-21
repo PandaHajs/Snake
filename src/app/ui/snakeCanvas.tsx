@@ -15,6 +15,7 @@ export default function GameCanvas() {
 	const [score, setScore] = useState<number>(0);
 	const [highScore, setHighScore] = useState<number>(0);
 	const [restart, setRestart] = useState<boolean>(false);
+	const cumulativeDistances = useRef<number[]>([]);
 
 	const head = useMemo<snakeHead>(
 		() => ({
@@ -46,7 +47,10 @@ export default function GameCanvas() {
 		}),
 		[],
 	);
-
+	const positionHistory = useRef<{ x: number; y: number }[]>([
+		{ x: head.mx + 50, y: head.my },
+		{ x: head.mx, y: head.my },
+	]);
 	useEffect(() => {
 		setHighScore(Number.parseInt(localStorage.getItem("highScore") || "0"));
 		document.addEventListener("keydown", (e) => {
@@ -74,12 +78,13 @@ export default function GameCanvas() {
 								setBegin,
 								setStart,
 								setScore,
-								score,
+								positionHistory.current,
+								cumulativeDistances.current,
 								setHighScore,
 								highScore,
 							);
 					});
-				}, 1000 / 8);
+				}, 1000 / 60);
 			}
 		}
 		return () => {
@@ -87,7 +92,7 @@ export default function GameCanvas() {
 				move.current = e.key;
 			});
 		};
-	}, [head, start, tail, food, score, highScore]);
+	}, [head, start, tail, food, highScore]);
 
 	return (
 		<div>
