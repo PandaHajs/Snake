@@ -162,7 +162,6 @@ function handleFailure(
 	setStart: React.Dispatch<React.SetStateAction<boolean>>,
 	animation: NodeJS.Timeout,
 ): [number, number, number, number, string] {
-	alert("You Lost");
 	setBegin(false);
 	setStart(false);
 	clearInterval(animation);

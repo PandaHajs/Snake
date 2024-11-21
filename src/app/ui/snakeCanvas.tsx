@@ -3,6 +3,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import styles from "./styles/canvas.module.scss";
 import { draw, roundNearest50 } from "../lib/snakeLogic";
 import type { snakeHead, snake, food } from "../lib/snakeLogic";
+import ReStart from "./reStart";
 
 export default function GameCanvas() {
 	const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -13,6 +14,7 @@ export default function GameCanvas() {
 	const animation = useRef<NodeJS.Timeout | null>(null);
 	const [score, setScore] = useState<number>(0);
 	const [highScore, setHighScore] = useState<number>(0);
+	const [restart, setRestart] = useState<boolean>(false);
 
 	const head = useMemo<snakeHead>(
 		() => ({
@@ -57,6 +59,7 @@ export default function GameCanvas() {
 				move.current = "";
 				setStart(false);
 				setBegin(true);
+				setRestart(true);
 				setScore(0);
 				animation.current = setInterval(() => {
 					requestAnimationFrame(() => {
@@ -87,23 +90,21 @@ export default function GameCanvas() {
 	}, [head, start, tail, food, score, highScore]);
 
 	return (
-		<div className={styles.mid}>
-			{!begin ? (
-				<button type="button" onClick={() => setStart(true)}>
-					Start
-				</button>
-			) : null}
+		<div>
 			<div className={styles.score}>
 				<p>Score: {score}</p>
 				<p>High Score: {highScore}</p>
 			</div>
-			<canvas
-				width="600"
-				height="600"
-				ref={canvasRef}
-				className={styles.canvas}
-				tabIndex={-1}
-			/>
+			<div className={styles.cDiv}>
+				<ReStart setStart={setStart} restart={restart} start={begin} />
+				<canvas
+					width="600"
+					height="600"
+					ref={canvasRef}
+					className={styles.canvas}
+					tabIndex={-1}
+				/>
+			</div>
 		</div>
 	);
 }
