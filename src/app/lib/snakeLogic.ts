@@ -38,66 +38,60 @@ export function draw(
 	cumulativeDistances: number[],
 	setHighScore: React.Dispatch<React.SetStateAction<number>>,
 	highScore: number,
-) {
+): [snakeHead, snake, food, { x: number; y: number }[], number[]] | undefined {
 	const sSpacing = 50;
 	const illegalStartingMoves = ["ArrowRight", "d", "D"];
-	const legalMoves = [
-		"ArrowLeft",
-		"a",
-		"A",
-		"ArrowRight",
-		"d",
-		"D",
-		"ArrowDown",
-		"s",
-		"S",
-		"ArrowUp",
-		"w",
-		"W",
-		"",
-	];
 	let [vx, vy] = handleKey(move) || [0, 0];
-	if (vx === 0 && vy === 0 && !legalMoves.includes(move)) {
-		return;
-	}
+	const headF: snakeHead = JSON.parse(JSON.stringify(head));
+	const tailF: snake = JSON.parse(JSON.stringify(tail));
+	const foodF: food = JSON.parse(JSON.stringify(food));
+	const positionHistoryF: { x: number; y: number }[] = JSON.parse(
+		JSON.stringify(positionHistory),
+	);
+	const cumulativeDistancesF: number[] = JSON.parse(
+		JSON.stringify(cumulativeDistances),
+	);
+
 	if (
 		(vx === 0 && vy === 0) ||
-		(vx === -head.vx && vy === -head.vy) ||
-		head.mx % 50 !== 0 ||
-		head.my % 50 !== 0
+		(vx === -headF.vx && vy === -headF.vy) ||
+		headF.mx % 50 !== 0 ||
+		headF.my % 50 !== 0
 	) {
-		vx = head.vx;
-		vy = head.vy;
+		vx = headF.vx;
+		vy = headF.vy;
 	}
 	if (
 		illegalStartingMoves.some((p) => p === move) &&
-		head.vx === 0 &&
-		head.vy === 0
+		headF.vx === 0 &&
+		headF.vy === 0
 	) {
 		return;
 	}
-	head.vx = vx;
-	head.vy = vy;
-	if (handleCollision(head.mx, head.my) && animation) {
-		[head.mx, head.my, head.vx, head.vy, move] = handleFailure(
+	headF.vx = vx;
+	headF.vy = vy;
+	if (handleCollision(headF.mx, headF.my) && animation) {
+		//biome-ignore lint/style/noParameterAssign: This is a necessary assignment, also no matter what I do the 'error' doesn't go away
+		[headF.mx, headF.my, headF.vx, headF.vy, move] = handleFailure(
 			setBegin,
 			setStart,
 			animation,
 		);
-		[food.x, food.y] = respawnFood(head, tail);
+		[foodF.x, foodF.y] = respawnFood(headF, tailF);
 		return;
 	}
-	if (handleBodyCollision(head, tail) && animation) {
-		[head.mx, head.my, head.vx, head.vy, move] = handleFailure(
+	if (handleBodyCollision(headF, tailF) && animation) {
+		//biome-ignore lint/style/noParameterAssign: This is a necessary assignment, also no matter what I do the 'error' doesn't go away
+		[headF.mx, headF.my, headF.vx, headF.vy, move] = handleFailure(
 			setBegin,
 			setStart,
 			animation,
 		);
-		[food.x, food.y] = respawnFood(head, tail);
+		[foodF.x, foodF.y] = respawnFood(headF, tailF);
 		return;
 	}
-	if (handleFoodCollision(head, food)) {
-		[food.x, food.y] = respawnFood(head, tail);
+	if (handleFoodCollision(headF, foodF)) {
+		[foodF.x, foodF.y] = respawnFood(headF, tailF);
 		setScore((prev) => {
 			const newScore = prev + 1;
 			if (newScore > highScore) {
@@ -106,58 +100,66 @@ export function draw(
 			}
 			return newScore;
 		});
-		tail.tail.push({
-			x: tail.tail[tail.tail.length - 1].x,
-			y: tail.tail[tail.tail.length - 1].y,
+		tailF.tail.push({
+			x: tailF.tail[tail.tail.length - 1].x,
+			y: tailF.tail[tail.tail.length - 1].y,
 		});
 	}
 	context.clearRect(0, 0, 600, 600);
-	context.fillStyle = food.color;
-	context.fillRect(food.x, food.y, food.radius, food.radius);
-	context.fillStyle = head.color;
-	context.fillRect(head.mx, head.my, head.radius, head.radius);
-	head.mx += head.vx;
-	head.my += head.vy;
+	context.fillStyle = foodF.color;
+	context.fillRect(foodF.x, foodF.y, foodF.radius, foodF.radius);
+	context.fillStyle = headF.color;
+	context.fillRect(headF.mx, headF.my, headF.radius, headF.radius);
+	headF.mx += headF.vx;
+	headF.my += headF.vy;
+	positionHistoryF.push({ x: headF.mx, y: headF.my });
 
-	positionHistory.push({ x: head.mx, y: head.my });
-
-	if (positionHistory.length > 3) {
-		const prevIndex = positionHistory.length - 2;
-		const dx = positionHistory[prevIndex + 1].x - positionHistory[prevIndex].x;
-		const dy = positionHistory[prevIndex + 1].y - positionHistory[prevIndex].y;
-		const distance = Math.sqrt(dx * dx + dy * dy);
-		cumulativeDistances.push((cumulativeDistances[prevIndex] || 0) + distance);
+	if (positionHistoryF.length > 1) {
+		const prevIndex = positionHistoryF.length - 2;
+		const dx =
+			positionHistoryF[prevIndex + 1].x - positionHistoryF[prevIndex].x;
+		const dy =
+			positionHistoryF[prevIndex + 1].y - positionHistoryF[prevIndex].y;
+		const distance = Math.sqrt(dx ** 2 + dy ** 2);
+		cumulativeDistancesF.push(
+			(cumulativeDistancesF[prevIndex] || 0) + distance,
+		);
 	} else {
-		cumulativeDistances.push(50);
+		cumulativeDistancesF.push(0);
 	}
-
-	const maxDistance = (tail.tail.length + 1) * sSpacing;
+	const maxDistance = (tailF.tail.length + 1) * sSpacing;
 
 	while (
-		cumulativeDistances.length > 0 &&
-		cumulativeDistances[cumulativeDistances.length - 1] -
-			cumulativeDistances[0] >
+		cumulativeDistancesF.length > 0 &&
+		cumulativeDistancesF[cumulativeDistancesF.length - 1] -
+			cumulativeDistancesF[0] >
 			maxDistance
 	) {
-		positionHistory.shift();
-		cumulativeDistances.shift();
+		positionHistoryF.shift();
+		cumulativeDistancesF.shift();
 	}
 
 	for (let i = 0; i < tail.tail.length; i++) {
 		const targetDistance = (i + 1) * sSpacing;
-		const totalDistance = cumulativeDistances[cumulativeDistances.length - 1];
+		const totalDistance = cumulativeDistancesF[cumulativeDistancesF.length - 1];
 		const targetPosition = totalDistance - targetDistance;
-		let index = cumulativeDistances.findIndex(
+		let index = cumulativeDistancesF.findIndex(
 			(distance) => distance >= targetPosition,
 		);
 		if (index === -1) {
 			index = 0;
 		}
-		tail.tail[i].x = positionHistory[index].x;
-		tail.tail[i].y = positionHistory[index].y;
-		context.fillStyle = tail.color;
-		context.fillRect(tail.tail[i].x, tail.tail[i].y, tail.radius, tail.radius);
+		tailF.tail[i].x = positionHistoryF[index].x;
+		tailF.tail[i].y = positionHistoryF[index].y;
+		context.fillStyle = tailF.color;
+		context.fillRect(
+			tailF.tail[i].x,
+			tailF.tail[i].y,
+			tailF.radius,
+			tailF.radius,
+		);
 	}
+	return [headF, tailF, foodF, positionHistoryF, cumulativeDistancesF];
 }
 
 function respawnFood(head: snakeHead, tail: snake): [number, number] {
@@ -213,7 +215,7 @@ function handleFailure(
 	];
 }
 
-function handleKey(direction: string | null) {
+function handleKey(direction: string | null): [number, number] | undefined {
 	switch (direction) {
 		case "ArrowUp":
 		case "w":
