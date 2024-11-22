@@ -34,63 +34,64 @@ export function draw(
 	setBegin: React.Dispatch<React.SetStateAction<boolean>>,
 	setStart: React.Dispatch<React.SetStateAction<boolean>>,
 	setScore: React.Dispatch<React.SetStateAction<number>>,
-	score: number,
+	positionHistory: { x: number; y: number }[],
+	cumulativeDistances: number[],
 	setHighScore: React.Dispatch<React.SetStateAction<number>>,
 	highScore: number,
-) {
+): [snakeHead, snake, food, { x: number; y: number }[], number[]] | undefined {
+	const sSpacing = 50;
 	const illegalStartingMoves = ["ArrowRight", "d", "D"];
-	const legalMoves = [
-		"ArrowLeft",
-		"a",
-		"A",
-		"ArrowRight",
-		"d",
-		"D",
-		"ArrowDown",
-		"s",
-		"S",
-		"ArrowUp",
-		"w",
-		"W",
-		"",
-	];
 	let [vx, vy] = handleKey(move) || [0, 0];
-	if (vx === 0 && vy === 0 && !legalMoves.includes(move)) {
-		return;
-	}
-	if ((vx === 0 && vy === 0) || (vx === -head.vx && vy === -head.vy)) {
-		vx = head.vx;
-		vy = head.vy;
+	const headF: snakeHead = JSON.parse(JSON.stringify(head));
+	const tailF: snake = JSON.parse(JSON.stringify(tail));
+	const foodF: food = JSON.parse(JSON.stringify(food));
+	const positionHistoryF: { x: number; y: number }[] = JSON.parse(
+		JSON.stringify(positionHistory),
+	);
+	const cumulativeDistancesF: number[] = JSON.parse(
+		JSON.stringify(cumulativeDistances),
+	);
+
+	if (
+		(vx === 0 && vy === 0) ||
+		(vx === -headF.vx && vy === -headF.vy) ||
+		headF.mx % 50 !== 0 ||
+		headF.my % 50 !== 0
+	) {
+		vx = headF.vx;
+		vy = headF.vy;
 	}
 	if (
 		illegalStartingMoves.some((p) => p === move) &&
-		head.vx === 0 &&
-		head.vy === 0
+		headF.vx === 0 &&
+		headF.vy === 0
 	) {
 		return;
 	}
-	head.vx = vx;
-	head.vy = vy;
-	if (handleCollision(head.mx, head.my) && animation) {
-		[head.mx, head.my, head.vx, head.vy, move] = handleFailure(
+	headF.vx = vx;
+	headF.vy = vy;
+	if (handleCollision(headF.mx, headF.my) && animation) {
+		//biome-ignore lint/style/noParameterAssign: This is a necessary assignment, also no matter what I do the 'error' doesn't go away
+		[headF.mx, headF.my, headF.vx, headF.vy, move] = handleFailure(
 			setBegin,
 			setStart,
 			animation,
 		);
-		[food.x, food.y] = respawnFood(head, tail);
+		[foodF.x, foodF.y] = respawnFood(headF, tailF);
 		return;
 	}
-	if (handleBodyCollision(head, tail) && animation) {
-		[head.mx, head.my, head.vx, head.vy, move] = handleFailure(
+	if (handleBodyCollision(headF, tailF) && animation) {
+		//biome-ignore lint/style/noParameterAssign: This is a necessary assignment, also no matter what I do the 'error' doesn't go away
+		[headF.mx, headF.my, headF.vx, headF.vy, move] = handleFailure(
 			setBegin,
 			setStart,
 			animation,
 		);
-		[food.x, food.y] = respawnFood(head, tail);
+		[foodF.x, foodF.y] = respawnFood(headF, tailF);
 		return;
 	}
-	if (handleFoodCollision(head, food)) {
-		[food.x, food.y] = respawnFood(head, tail);
+	if (handleFoodCollision(headF, foodF)) {
+		[foodF.x, foodF.y] = respawnFood(headF, tailF);
 		setScore((prev) => {
 			const newScore = prev + 1;
 			if (newScore > highScore) {
@@ -99,26 +100,66 @@ export function draw(
 			}
 			return newScore;
 		});
-		tail.tail.push({
-			x: tail.tail[tail.tail.length - 1].x,
-			y: tail.tail[tail.tail.length - 1].y,
+		tailF.tail.push({
+			x: tailF.tail[tail.tail.length - 1].x,
+			y: tailF.tail[tail.tail.length - 1].y,
 		});
 	}
 	context.clearRect(0, 0, 600, 600);
-	context.fillStyle = food.color;
-	context.fillRect(food.x, food.y, food.radius, food.radius);
-	context.fillStyle = head.color;
-	context.fillRect(head.mx, head.my, head.radius, head.radius);
-	for (const t of tail.tail) {
-		context.fillStyle = tail.color;
-		context.fillRect(t.x, t.y, tail.radius, tail.radius);
+	context.fillStyle = foodF.color;
+	context.fillRect(foodF.x, foodF.y, foodF.radius, foodF.radius);
+	context.fillStyle = headF.color;
+	context.fillRect(headF.mx, headF.my, headF.radius, headF.radius);
+	headF.mx += headF.vx;
+	headF.my += headF.vy;
+	positionHistoryF.push({ x: headF.mx, y: headF.my });
+
+	if (positionHistoryF.length > 1) {
+		const prevIndex = positionHistoryF.length - 2;
+		const dx =
+			positionHistoryF[prevIndex + 1].x - positionHistoryF[prevIndex].x;
+		const dy =
+			positionHistoryF[prevIndex + 1].y - positionHistoryF[prevIndex].y;
+		const distance = Math.sqrt(dx ** 2 + dy ** 2);
+		cumulativeDistancesF.push(
+			(cumulativeDistancesF[prevIndex] || 0) + distance,
+		);
+	} else {
+		cumulativeDistancesF.push(0);
 	}
-	if (move !== "") {
-		tail.tail.unshift({ x: head.mx, y: head.my });
-		tail.tail.pop();
+	const maxDistance = (tailF.tail.length + 1) * sSpacing;
+
+	while (
+		cumulativeDistancesF.length > 0 &&
+		cumulativeDistancesF[cumulativeDistancesF.length - 1] -
+			cumulativeDistancesF[0] >
+			maxDistance
+	) {
+		positionHistoryF.shift();
+		cumulativeDistancesF.shift();
 	}
-	head.mx += head.vx;
-	head.my += head.vy;
+
+	for (let i = 0; i < tail.tail.length; i++) {
+		const targetDistance = (i + 1) * sSpacing;
+		const totalDistance = cumulativeDistancesF[cumulativeDistancesF.length - 1];
+		const targetPosition = totalDistance - targetDistance;
+		let index = cumulativeDistancesF.findIndex(
+			(distance) => distance >= targetPosition,
+		);
+		if (index === -1) {
+			index = 0;
+		}
+		tailF.tail[i].x = positionHistoryF[index].x;
+		tailF.tail[i].y = positionHistoryF[index].y;
+		context.fillStyle = tailF.color;
+		context.fillRect(
+			tailF.tail[i].x,
+			tailF.tail[i].y,
+			tailF.radius,
+			tailF.radius,
+		);
+	}
+	return [headF, tailF, foodF, positionHistoryF, cumulativeDistancesF];
 }
 
 function respawnFood(head: snakeHead, tail: snake): [number, number] {
@@ -174,24 +215,24 @@ function handleFailure(
 	];
 }
 
-function handleKey(direction: string | null) {
+function handleKey(direction: string | null): [number, number] | undefined {
 	switch (direction) {
 		case "ArrowUp":
 		case "w":
 		case "W":
-			return [0, -50];
+			return [0, -5];
 		case "ArrowDown":
 		case "s":
 		case "S":
-			return [0, 50];
+			return [0, 5];
 		case "ArrowLeft":
 		case "a":
 		case "A":
-			return [-50, 0];
+			return [-5, 0];
 		case "ArrowRight":
 		case "d":
 		case "D":
-			return [50, 0];
+			return [5, 0];
 		default:
 			return;
 	}
