@@ -2,7 +2,14 @@ import type { snakeHead, snake, food } from "../lib/snakeLogic";
 import { draw, roundNearest50 } from "../lib/snakeLogic";
 import { useEffect, useRef, useState } from "react";
 
-export function GameCanvasHook() {
+export function useGameCanvas(): {
+	canvasRef: React.RefObject<HTMLCanvasElement | null>;
+	score: number;
+	highScore: number;
+	setStart: React.Dispatch<React.SetStateAction<boolean>>;
+	restart: boolean;
+	begin: boolean;
+} {
 	const canvasRef = useRef<HTMLCanvasElement>(null);
 	const ctxRef = useRef<CanvasRenderingContext2D | null>(null);
 	const move = useRef<string>("");

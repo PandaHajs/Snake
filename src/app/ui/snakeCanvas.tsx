@@ -1,11 +1,11 @@
 "use client";
-import { GameCanvasHook } from "../lib/snakeCanvas.hook";
+import { useGameCanvas } from "../lib/snakeCanvas.hook";
 import styles from "./styles/canvas.module.scss";
 import ReStart from "./reStart";
 
 export default function GameCanvas() {
 	const { canvasRef, score, highScore, setStart, restart, begin } =
-		GameCanvasHook();
+		useGameCanvas();
 	return (
 		<div>
 			<div className={styles.score}>
