@@ -40,6 +40,11 @@ app.post("/update", (req, res) => {
   res.send();
 });
 
+app.get("/healthcheck", (req, res) => {
+  res.writeHead(200);
+  res.send();
+});
+
 app.listen(port, () => {
   console.log("server is running on port 8080");
 });

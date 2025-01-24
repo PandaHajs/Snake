@@ -36,7 +36,7 @@ export default function Modal(props: {
   const { mutateAsync } = useMutation({
     mutationFn: async (body: { name: string; score: number }) => {
       const response = await axios.post(
-        "https://130.162.46.124:8080/leaderboard/update",
+        "https://api.skowronski.one:8080/leaderboard/update",
         body
       );
       return response;
