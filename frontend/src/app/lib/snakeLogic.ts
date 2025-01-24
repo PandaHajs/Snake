@@ -1,4 +1,4 @@
-import { useLeaderboard } from "../store/store";
+import { useHighScore, useLeaderboard } from "../store/store";
 
 export type snake = {
   radius: number;
@@ -35,13 +35,10 @@ export function draw(
   head: snakeHead,
   setBegin: React.Dispatch<React.SetStateAction<boolean>>,
   setStart: React.Dispatch<React.SetStateAction<boolean>>,
-  setScore: React.Dispatch<React.SetStateAction<number>>,
-  highScore: number,
-  setHighScore: (newScore: number) => void,
+  incHighscore: () => void,
   positionHistory: { x: number; y: number }[],
   cumulativeDistances: number[],
-  setHigh: React.Dispatch<React.SetStateAction<boolean>>,
-  leaderboard: any
+  setHigh: React.Dispatch<React.SetStateAction<boolean>>
 ): [snakeHead, snake, food, { x: number; y: number }[], number[]] | undefined {
   const sSpacing = 50;
   const illegalStartingMoves = ["ArrowRight", "d", "D"];
@@ -80,9 +77,7 @@ export function draw(
       setBegin,
       setStart,
       animation,
-      setHigh,
-      highScore,
-      leaderboard
+      setHigh
     );
     [foodF.x, foodF.y] = respawnFood(headF, tailF);
     return;
@@ -93,22 +88,14 @@ export function draw(
       setBegin,
       setStart,
       animation,
-      setHigh,
-      highScore,
-      leaderboard
+      setHigh
     );
     [foodF.x, foodF.y] = respawnFood(headF, tailF);
     return;
   }
   if (handleFoodCollision(headF, foodF)) {
     [foodF.x, foodF.y] = respawnFood(headF, tailF);
-    setScore((prev) => {
-      const newScore = prev + 1;
-      if (newScore > highScore) {
-        setHighScore(newScore);
-      }
-      return newScore;
-    });
+    incHighscore();
     tailF.tail.push({
       x: tailF.tail[tail.tail.length - 1].x,
       y: tailF.tail[tail.tail.length - 1].y,
@@ -211,13 +198,13 @@ function handleFailure(
   setBegin: React.Dispatch<React.SetStateAction<boolean>>,
   setStart: React.Dispatch<React.SetStateAction<boolean>>,
   animation: NodeJS.Timeout,
-  setHigh: React.Dispatch<React.SetStateAction<boolean>>,
-  highScore: number,
-  leaderboard: any
+  setHigh: React.Dispatch<React.SetStateAction<boolean>>
 ): [number, number, number, number, string] {
   setBegin(false);
   setStart(false);
   clearInterval(animation);
+  const highScore = useHighScore.getState().count;
+  const leaderboard = useLeaderboard.getState().leaderboard;
   if (highScore > leaderboard[leaderboard.length - 1].score) {
     setHigh(true);
   }

@@ -5,11 +5,9 @@ import { useHighScore, useLeaderboard } from "../store/store";
 
 export function useGameCanvas(): {
   canvasRef: React.RefObject<HTMLCanvasElement | null>;
-  score: number;
   setStart: React.Dispatch<React.SetStateAction<boolean>>;
   restart: boolean;
   begin: boolean;
-  highScore: number;
   high: boolean;
 } {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -18,11 +16,9 @@ export function useGameCanvas(): {
   const [begin, setBegin] = useState<boolean>(false);
   const [start, setStart] = useState<boolean>(false);
   const animation = useRef<NodeJS.Timeout | null>(null);
-  const [score, setScore] = useState<number>(0);
   const [restart, setRestart] = useState<boolean>(false);
-  const highScore = useHighScore((state) => state.count);
-  const setHighScore = useHighScore((state) => state.setState);
-  const leaderboard = useLeaderboard((state) => state.leaderboard);
+  const incHighscore = useHighScore((state) => state.inc);
+  const resetHighscore = useHighScore((state) => state.resetScore);
   const [high, setHigh] = useState<boolean>(false);
   let cumulativeDistances: Array<number> = [
     0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50,
@@ -78,8 +74,8 @@ export function useGameCanvas(): {
         setStart(false);
         setBegin(true);
         setRestart(true);
-        setScore(0);
         setHigh(false);
+        resetHighscore();
         animation.current = setInterval(() => {
           requestAnimationFrame(() => {
             if (ctxRef.current)
@@ -92,13 +88,10 @@ export function useGameCanvas(): {
                 head,
                 setBegin,
                 setStart,
-                setScore,
-                highScore,
-                setHighScore,
+                incHighscore,
                 positionHistory,
                 cumulativeDistances,
-                setHigh,
-                leaderboard
+                setHigh
               );
             if (result) {
               [head, tail, food, positionHistory, cumulativeDistances] = result;
@@ -113,5 +106,5 @@ export function useGameCanvas(): {
       });
     };
   }, [start]);
-  return { canvasRef, score, setStart, restart, begin, highScore, high };
+  return { canvasRef, setStart, restart, begin, high };
 }

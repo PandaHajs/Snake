@@ -1,9 +1,9 @@
 import { create } from "zustand";
-import { createJSONStorage, persist } from "zustand/middleware";
 
 interface highScore {
   count: number;
-  setState: (newScore: number) => void;
+  resetScore: () => void;
+  inc: () => void;
 }
 
 interface leaderboard {
@@ -11,18 +11,11 @@ interface leaderboard {
   setLeaderboard: (scores: { name: string; score: number }[]) => void;
 }
 
-export const useHighScore = create<highScore>()(
-  persist(
-    (set) => ({
-      count: 0,
-      setState: (count) => set({ count }),
-    }),
-    {
-      name: "highScore",
-      storage: createJSONStorage(() => localStorage),
-    }
-  )
-);
+export const useHighScore = create<highScore>()((set) => ({
+  count: 0,
+  resetScore: () => set({ count: 0 }),
+  inc: () => set((state) => ({ count: state.count + 1 })),
+}));
 
 export const useLeaderboard = create<leaderboard>()((set) => ({
   leaderboard: [],

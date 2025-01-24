@@ -13,18 +13,33 @@ export default function Modal(props: {
 }) {
   const [name, setName] = useState("");
   const highScore = useHighScore((state) => state.count);
+  const [loading, setLoading] = useState(false);
+
   const handleFormSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
     const newScore = { name: name, score: highScore };
-
-    mutate(newScore);
+    new Promise((resolve, reject) => {
+      setLoading(true);
+      mutateAsync(newScore).then((status) => {
+        if (status.status !== 201) {
+          reject("Error");
+        }
+        resolve("Success");
+      });
+    }).then(() => {
+      props.setStart((prev) => !prev);
+      setLoading(false);
+    });
   };
 
-  const { mutate } = useMutation({
+  const { mutateAsync } = useMutation({
     mutationFn: async (body: { name: string; score: number }) => {
-      const response = await axios.post("http://localhost:3000/update", body);
-      return response.data;
+      const response = await axios.post(
+        "http://130.162.46.124:8080/leaderboard",
+        body
+      );
+      return response;
     },
   });
   return (
@@ -40,7 +55,9 @@ export default function Modal(props: {
                 setName(e.target.value);
               }}
             />
-            <button type="submit">Submit</button>
+            <button type="submit" disabled={loading}>
+              Submit
+            </button>
           </form>
         </div>
       ) : (

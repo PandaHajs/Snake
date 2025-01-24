@@ -10,8 +10,11 @@ interface LeaderBoardEntry {
 }
 
 export default function LeaderBoard() {
+  console.log(process.env.NEXT_PUBLIC_LEADERBOARD_API);
   const fetchLeaderBoard = async () => {
-    const response = await axios.get("http://localhost:3000/leaderboard");
+    const response = await axios.get(
+      "http://130.162.46.124:8080/leaderboard/update"
+    );
     if (response.status !== 200) {
       throw new Error("Error fetching data");
     }
@@ -27,7 +30,7 @@ export default function LeaderBoard() {
 
   useEffect(() => {
     if (status === "success") {
-      useLeaderboard.setState({ leaderboard: data });
+      useLeaderboard.setState({ leaderboard: JSON.parse(data).leaderboard });
     }
   }, [status]);
 
@@ -38,9 +41,9 @@ export default function LeaderBoard() {
       {status === "error" && <div>Error fetching data</div>}
       {status === "success" && (
         <ol>
-          {leaderBoard.map((entry: LeaderBoardEntry) => {
+          {leaderBoard.map((entry: LeaderBoardEntry, i) => {
             return (
-              <li key={entry.name}>
+              <li key={i}>
                 {entry.name} - {entry.score}
               </li>
             );
