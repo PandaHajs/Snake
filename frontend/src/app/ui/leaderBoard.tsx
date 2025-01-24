@@ -11,9 +11,7 @@ interface LeaderBoardEntry {
 
 export default function LeaderBoard() {
   const fetchLeaderBoard = async () => {
-    const response = await axios.get(
-      "https://api.skowronski.one:8080/leaderboard"
-    );
+    const response = await axios.get("https://api.skowronski.one/leaderboard");
     if (response.status !== 200) {
       throw new Error("Error fetching data");
     }
