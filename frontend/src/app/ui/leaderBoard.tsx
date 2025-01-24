@@ -13,7 +13,7 @@ export default function LeaderBoard() {
   console.log(process.env.NEXT_PUBLIC_LEADERBOARD_API);
   const fetchLeaderBoard = async () => {
     const response = await axios.get(
-      "http://130.162.46.124:8080/leaderboard/update"
+      "https://130.162.46.124:8080/leaderboard/update"
     );
     if (response.status !== 200) {
       throw new Error("Error fetching data");
