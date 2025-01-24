@@ -1,10 +1,10 @@
 "use client";
 import { useGameCanvas } from "../lib/snakeCanvas.hook";
 import styles from "./styles/canvas.module.scss";
-import ReStart from "./reStart";
+import Modal from "./modal";
 
 export default function GameCanvas() {
-  const { canvasRef, score, setStart, restart, begin, highScore } =
+  const { canvasRef, score, setStart, restart, begin, highScore, high } =
     useGameCanvas();
   return (
     <div>
@@ -13,7 +13,12 @@ export default function GameCanvas() {
         <p>High Score: {highScore}</p>
       </div>
       <div className={styles.cDiv}>
-        <ReStart setStart={setStart} restart={restart} start={begin} />
+        <Modal
+          setStart={setStart}
+          restart={restart}
+          start={begin}
+          high={high}
+        />
         <canvas
           width="600"
           height="600"

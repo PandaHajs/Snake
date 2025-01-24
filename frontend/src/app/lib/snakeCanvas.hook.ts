@@ -1,7 +1,7 @@
 import type { snakeHead, snake, food } from "../lib/snakeLogic";
 import { draw, roundNearest50 } from "../lib/snakeLogic";
 import { useEffect, useRef, useState } from "react";
-import { useHighScore } from "../store/store";
+import { useHighScore, useLeaderboard } from "../store/store";
 
 export function useGameCanvas(): {
   canvasRef: React.RefObject<HTMLCanvasElement | null>;
@@ -10,6 +10,7 @@ export function useGameCanvas(): {
   restart: boolean;
   begin: boolean;
   highScore: number;
+  high: boolean;
 } {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const ctxRef = useRef<CanvasRenderingContext2D | null>(null);
@@ -21,6 +22,8 @@ export function useGameCanvas(): {
   const [restart, setRestart] = useState<boolean>(false);
   const highScore = useHighScore((state) => state.count);
   const setHighScore = useHighScore((state) => state.setState);
+  const leaderboard = useLeaderboard((state) => state.leaderboard);
+  const [high, setHigh] = useState<boolean>(false);
   let cumulativeDistances: Array<number> = [
     0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50,
   ];
@@ -76,6 +79,7 @@ export function useGameCanvas(): {
         setBegin(true);
         setRestart(true);
         setScore(0);
+        setHigh(false);
         animation.current = setInterval(() => {
           requestAnimationFrame(() => {
             if (ctxRef.current)
@@ -92,7 +96,9 @@ export function useGameCanvas(): {
                 highScore,
                 setHighScore,
                 positionHistory,
-                cumulativeDistances
+                cumulativeDistances,
+                setHigh,
+                leaderboard
               );
             if (result) {
               [head, tail, food, positionHistory, cumulativeDistances] = result;
@@ -107,5 +113,5 @@ export function useGameCanvas(): {
       });
     };
   }, [start]);
-  return { canvasRef, score, setStart, restart, begin, highScore };
+  return { canvasRef, score, setStart, restart, begin, highScore, high };
 }

@@ -1,3 +1,5 @@
+import { useLeaderboard } from "../store/store";
+
 export type snake = {
   radius: number;
   color: string;
@@ -37,7 +39,9 @@ export function draw(
   highScore: number,
   setHighScore: (newScore: number) => void,
   positionHistory: { x: number; y: number }[],
-  cumulativeDistances: number[]
+  cumulativeDistances: number[],
+  setHigh: React.Dispatch<React.SetStateAction<boolean>>,
+  leaderboard: any
 ): [snakeHead, snake, food, { x: number; y: number }[], number[]] | undefined {
   const sSpacing = 50;
   const illegalStartingMoves = ["ArrowRight", "d", "D"];
@@ -75,7 +79,10 @@ export function draw(
     [headF.mx, headF.my, headF.vx, headF.vy, move] = handleFailure(
       setBegin,
       setStart,
-      animation
+      animation,
+      setHigh,
+      highScore,
+      leaderboard
     );
     [foodF.x, foodF.y] = respawnFood(headF, tailF);
     return;
@@ -85,7 +92,10 @@ export function draw(
     [headF.mx, headF.my, headF.vx, headF.vy, move] = handleFailure(
       setBegin,
       setStart,
-      animation
+      animation,
+      setHigh,
+      highScore,
+      leaderboard
     );
     [foodF.x, foodF.y] = respawnFood(headF, tailF);
     return;
@@ -200,11 +210,17 @@ function handleCollision(x: number, y: number) {
 function handleFailure(
   setBegin: React.Dispatch<React.SetStateAction<boolean>>,
   setStart: React.Dispatch<React.SetStateAction<boolean>>,
-  animation: NodeJS.Timeout
+  animation: NodeJS.Timeout,
+  setHigh: React.Dispatch<React.SetStateAction<boolean>>,
+  highScore: number,
+  leaderboard: any
 ): [number, number, number, number, string] {
   setBegin(false);
   setStart(false);
   clearInterval(animation);
+  if (highScore > leaderboard[leaderboard.length - 1].score) {
+    setHigh(true);
+  }
   return [
     roundNearest50(Math.random() * 500),
     roundNearest50(Math.random() * 550),

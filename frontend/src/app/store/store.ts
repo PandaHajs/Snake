@@ -6,6 +6,11 @@ interface highScore {
   setState: (newScore: number) => void;
 }
 
+interface leaderboard {
+  leaderboard: { name: string; score: number }[];
+  setLeaderboard: (scores: { name: string; score: number }[]) => void;
+}
+
 export const useHighScore = create<highScore>()(
   persist(
     (set) => ({
@@ -19,6 +24,7 @@ export const useHighScore = create<highScore>()(
   )
 );
 
-export const useLeaderboard = create((set) => ({
-  scores: [],
+export const useLeaderboard = create<leaderboard>()((set) => ({
+  leaderboard: [],
+  setLeaderboard: (leaderboard) => set({ leaderboard }),
 }));
