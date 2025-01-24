@@ -1,6 +1,6 @@
 "use client";
 import styles from "./styles/canvas.module.scss";
-import { useState } from "react";
+import { FormEvent, useState } from "react";
 import { useHighScore } from "../store/store";
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
@@ -13,7 +13,7 @@ export default function Modal(props: {
 }) {
   const [name, setName] = useState("");
   const highScore = useHighScore((state) => state.count);
-  const handleFormSubmit = (e) => {
+  const handleFormSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
     const newScore = { name: name, score: highScore };
@@ -32,7 +32,7 @@ export default function Modal(props: {
       {props.start ? null : props.high ? (
         <div className={styles.reStart}>
           <h2>New high score!</h2>
-          <form>
+          <form onSubmit={handleFormSubmit}>
             <input
               type="text"
               placeholder="Enter your name"
@@ -40,14 +40,7 @@ export default function Modal(props: {
                 setName(e.target.value);
               }}
             />
-            <button
-              type="submit"
-              onClick={(e) => {
-                handleFormSubmit(e);
-              }}
-            >
-              Submit
-            </button>
+            <button type="submit">Submit</button>
           </form>
         </div>
       ) : (
