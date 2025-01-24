@@ -9,7 +9,7 @@ app.use(function (req, res, next) {
 
   res.setHeader(
     "Access-Control-Allow-Headers",
-    "X-Requested-With,content-type"
+    "X-Requested-With, Origin, Content-Type, X-Auth-Token"
   );
 
   res.setHeader("Access-Control-Allow-Credentials", true);

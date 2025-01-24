@@ -36,7 +36,7 @@ export default function Modal(props: {
   const { mutateAsync } = useMutation({
     mutationFn: async (body: { name: string; score: number }) => {
       const response = await axios.post(
-        "https://api.skowronski.one/leaderboard/update",
+        "https://api.skowronski.one/update",
         body
       );
       return response;
