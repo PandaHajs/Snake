@@ -57,7 +57,7 @@ export default function Modal(props: {
                 setName(e.target.value);
               }}
               minLength={3}
-              maxLength={12}
+              maxLength={25}
               required
             />
             <button type="submit" disabled={loading}>
