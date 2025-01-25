@@ -10,6 +10,7 @@ export default function Modal(props: {
   restart: boolean;
   start: boolean;
   high: boolean;
+  setHigh: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
   const [name, setName] = useState("");
   const highScore = useHighScore((state) => state.count);
@@ -28,8 +29,9 @@ export default function Modal(props: {
         resolve("Success");
       });
     }).then(() => {
-      props.setStart((prev) => !prev);
       setLoading(false);
+      props.setHigh(false);
+      setName("");
     });
   };
 
@@ -54,11 +56,17 @@ export default function Modal(props: {
               onChange={(e) => {
                 setName(e.target.value);
               }}
+              minLength={3}
+              maxLength={12}
+              required
             />
             <button type="submit" disabled={loading}>
               Submit
             </button>
           </form>
+          <button type="button" onClick={() => props.setHigh(false)}>
+            Skip
+          </button>
         </div>
       ) : (
         <div className={styles.reStart}>

@@ -5,7 +5,8 @@ import Modal from "./modal";
 import { useHighScore } from "../store/store";
 
 export default function GameCanvas() {
-  const { canvasRef, setStart, restart, begin, high } = useGameCanvas();
+  const { canvasRef, setStart, restart, begin, high, setHigh } =
+    useGameCanvas();
   const score = useHighScore((state) => state.count);
   return (
     <div>
@@ -18,6 +19,7 @@ export default function GameCanvas() {
           restart={restart}
           start={begin}
           high={high}
+          setHigh={setHigh}
         />
         <canvas
           width="600"

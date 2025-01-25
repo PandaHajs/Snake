@@ -21,6 +21,7 @@ export default function LeaderBoard() {
   const { data, status } = useQuery({
     queryKey: ["leaderboard"],
     queryFn: fetchLeaderBoard,
+    refetchInterval: 10000,
   });
 
   const leaderBoard = useLeaderboard((state) => state.leaderboard);
@@ -29,7 +30,7 @@ export default function LeaderBoard() {
     if (status === "success") {
       useLeaderboard.setState({ leaderboard: JSON.parse(data).leaderboard });
     }
-  }, [status]);
+  }, [status, data]);
 
   return (
     <div className={s.leaderBoard}>

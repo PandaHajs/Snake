@@ -9,6 +9,7 @@ export function useGameCanvas(): {
   restart: boolean;
   begin: boolean;
   high: boolean;
+  setHigh: React.Dispatch<React.SetStateAction<boolean>>;
 } {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const ctxRef = useRef<CanvasRenderingContext2D | null>(null);
@@ -106,5 +107,5 @@ export function useGameCanvas(): {
       });
     };
   }, [start]);
-  return { canvasRef, setStart, restart, begin, high };
+  return { canvasRef, setStart, restart, begin, high, setHigh };
 }
