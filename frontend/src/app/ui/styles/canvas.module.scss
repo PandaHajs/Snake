@@ -35,8 +35,26 @@
     height: 600px;
     position: absolute;
 
+    form {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+
+        input[type="text"] {
+            width: 10rem;
+            height: 2rem;
+            border-radius: 20px;
+            border: none;
+            margin-top: 3vh;
+            padding-left: 10px;
+            background-color: rgb(56, 56, 58);
+            color: white;
+        }
+    }
+
     button {
         margin-top: 3vh;
+        margin-bottom: -2vh;
         color: var(--borders);
         text-decoration: none;
         width: 10rem;
