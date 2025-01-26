@@ -26,7 +26,7 @@ app.use(cors(corsOptions));
 app.get("/leaderboard", (req, res) => {
   res.writeHead(200, { "Content-Type": "application/json" });
   const leaderboard = fs.readFileSync("leaderboard.json", "utf8");
-  res.write(JSON.stringify(JSON.parse(leaderboard)));
+  res.write(JSON.stringify(leaderboard));
   res.send();
 });
 
