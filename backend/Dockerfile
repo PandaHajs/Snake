@@ -25,6 +25,9 @@ RUN --mount=type=bind,source=package.json,target=package.json \
     --mount=type=cache,target=/root/.npm \
     npm ci
 
+COPY package*.json .
+RUN npm install
+
 
 # Run the application as a non-root user.
 USER node
