@@ -35,4 +35,4 @@ COPY . .
 EXPOSE 3000
 
 # Run the application.
-CMD node index.ts
+CMD ["npm", "run", "build"]

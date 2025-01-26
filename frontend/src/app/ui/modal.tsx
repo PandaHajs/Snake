@@ -1,9 +1,10 @@
 "use client";
 import styles from "./styles/canvas.module.scss";
-import { FormEvent, useState } from "react";
-import { useHighScore } from "../store/store";
-import { useMutation } from "@tanstack/react-query";
+import { FormEvent, useEffect, useState } from "react";
+import { useGameID, useHighScore } from "../store/store";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import axios from "axios";
+import CryptoJS from "crypto-js";
 
 export default function Modal(props: {
   setStart: React.Dispatch<React.SetStateAction<boolean>>;
@@ -15,11 +16,21 @@ export default function Modal(props: {
   const [name, setName] = useState("");
   const highScore = useHighScore((state) => state.count);
   const [loading, setLoading] = useState(false);
+  const gameID = useGameID((state) => state.gameID);
 
   const handleFormSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    const decryptedID = parseInt(
+      CryptoJS.AES.decrypt(gameID.toString(), "very secret yes").toString(
+        CryptoJS.enc.Utf8
+      )
+    );
 
-    const newScore = { name: name, score: highScore };
+    const newScore = {
+      name: name,
+      score: highScore,
+      id: decryptedID,
+    };
     new Promise((resolve, reject) => {
       setLoading(true);
       mutateAsync(newScore).then((status) => {
@@ -38,12 +49,38 @@ export default function Modal(props: {
   const { mutateAsync } = useMutation({
     mutationFn: async (body: { name: string; score: number }) => {
       const response = await axios.post(
-        "https://api.skowronski.one/update",
+        //"https://api.skowronski.one/update",
+        "http://localhost:3000/update",
         body
       );
       return response;
     },
   });
+
+  const fetchGameID = async () => {
+    const response = await axios.post("http://localhost:3000/game"); //"https://api.skowronski.one/game");
+    if (response.status !== 201) {
+      throw new Error("Error");
+    }
+    return response.data;
+  };
+
+  const { data, status, refetch } = useQuery({
+    queryKey: ["gameID"],
+    queryFn: fetchGameID,
+    enabled: false,
+  });
+
+  useEffect(() => {
+    if (status === "success") {
+      useGameID.setState({ gameID: data });
+      props.setStart((prev) => !prev);
+    }
+  }, [status, data]);
+
+  const startGame = async () => {
+    refetch();
+  };
   return (
     <>
       {props.start ? null : props.high ? (
@@ -79,7 +116,7 @@ export default function Modal(props: {
           <button
             type="button"
             onClick={() => {
-              props.setStart((prev) => !prev);
+              startGame();
             }}
           >
             {props.restart ? "Restart" : "Start"}

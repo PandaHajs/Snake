@@ -11,6 +11,11 @@ interface leaderboard {
   setLeaderboard: (scores: { name: string; score: number }[]) => void;
 }
 
+interface gameID {
+  gameID: number;
+  setGameID: (gameID: number) => void;
+}
+
 export const useHighScore = create<highScore>()((set) => ({
   count: 0,
   resetScore: () => set({ count: 0 }),
@@ -20,4 +25,9 @@ export const useHighScore = create<highScore>()((set) => ({
 export const useLeaderboard = create<leaderboard>()((set) => ({
   leaderboard: [],
   setLeaderboard: (leaderboard) => set({ leaderboard }),
+}));
+
+export const useGameID = create<gameID>()((set) => ({
+  gameID: 0,
+  setGameID: (gameID: number) => set({ gameID }),
 }));
