@@ -11,14 +11,12 @@
   "author": "",
   "license": "ISC",
   "description": "",
-  "devDependencies": {
+  "dependencies": {
     "@tsconfig/node20": "^20.1.4",
     "@types/cors": "^2.8.17",
     "@types/crypto-js": "^4.2.2",
     "@types/express": "^5.0.0",
-    "@types/node": "^22.10.10"
-  },
-  "dependencies": {
+    "@types/node": "^22.10.10",
     "cors": "^2.8.5",
     "crypto-js": "^4.2.0",
     "express": "^4.21.2",
