@@ -74,7 +74,7 @@ app.post("/game", (req, res) => {
   );
   res.send();
   setTimeout(() => {
-    currentGames.games.splice(currentGames.games.indexOf(gameID), 1);
+    currentGames.splice(currentGames.games.indexOf(gameID), 1);
     fs.writeFileSync("games.json", JSON.stringify({ games: currentGames }));
   }, 600000);
 });
