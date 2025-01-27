@@ -16,6 +16,11 @@ interface gameID {
   setGameID: (gameID: number) => void;
 }
 
+interface lastMove {
+  lastMove: string;
+  setLastMove: (lastMove: string) => void;
+}
+
 export const useHighScore = create<highScore>()((set) => ({
   count: 0,
   resetScore: () => set({ count: 0 }),
@@ -30,4 +35,9 @@ export const useLeaderboard = create<leaderboard>()((set) => ({
 export const useGameID = create<gameID>()((set) => ({
   gameID: 0,
   setGameID: (gameID: number) => set({ gameID }),
+}));
+
+export const useLastMove = create<lastMove>()((set) => ({
+  lastMove: "",
+  setLastMove: (lastMove: string) => set({ lastMove }),
 }));

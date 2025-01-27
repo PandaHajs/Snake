@@ -1,4 +1,4 @@
-import { useHighScore, useLeaderboard } from "../store/store";
+import { useHighScore, useLeaderboard, useLastMove } from "@/app/store/store";
 
 export type snake = {
   radius: number;
@@ -30,7 +30,6 @@ export function draw(
   food: food,
   tail: snake,
   animation: NodeJS.Timeout | null,
-  move: string,
   context: CanvasRenderingContext2D,
   head: snakeHead,
   setBegin: React.Dispatch<React.SetStateAction<boolean>>,
@@ -42,6 +41,7 @@ export function draw(
 ): [snakeHead, snake, food, { x: number; y: number }[], number[]] | undefined {
   const sSpacing = 50;
   const illegalStartingMoves = ["ArrowRight", "d", "D"];
+  const move = useLastMove.getState().lastMove;
   let [vx, vy] = handleKey(move) || [0, 0];
   const headF: snakeHead = JSON.parse(JSON.stringify(head));
   const tailF: snake = JSON.parse(JSON.stringify(tail));
@@ -72,8 +72,7 @@ export function draw(
   headF.vx = vx;
   headF.vy = vy;
   if (handleCollision(headF.mx, headF.my) && animation) {
-    //biome-ignore lint/style/noParameterAssign: This is a necessary assignment, also no matter what I do the 'error' doesn't go away
-    [headF.mx, headF.my, headF.vx, headF.vy, move] = handleFailure(
+    [headF.mx, headF.my, headF.vx, headF.vy] = handleFailure(
       setBegin,
       setStart,
       animation,
@@ -83,8 +82,7 @@ export function draw(
     return;
   }
   if (handleBodyCollision(headF, tailF) && animation) {
-    //biome-ignore lint/style/noParameterAssign: This is a necessary assignment, also no matter what I do the 'error' doesn't go away
-    [headF.mx, headF.my, headF.vx, headF.vy, move] = handleFailure(
+    [headF.mx, headF.my, headF.vx, headF.vy] = handleFailure(
       setBegin,
       setStart,
       animation,
@@ -109,6 +107,21 @@ export function draw(
   headF.mx += headF.vx;
   headF.my += headF.vy;
   positionHistoryF.push({ x: headF.mx, y: headF.my });
+
+  context.strokeStyle = "#ddd";
+  for (let i = 0; i <= 12; i++) {
+    context.beginPath();
+    context.moveTo(i * 50, 0);
+    context.lineTo(i * 50, 600);
+    context.stroke();
+  }
+
+  for (let i = 0; i <= 12; i++) {
+    context.beginPath();
+    context.moveTo(0, i * 50);
+    context.lineTo(600, i * 50);
+    context.stroke();
+  }
 
   if (positionHistoryF.length > 1) {
     const prevIndex = positionHistoryF.length - 2;
@@ -199,7 +212,7 @@ function handleFailure(
   setStart: React.Dispatch<React.SetStateAction<boolean>>,
   animation: NodeJS.Timeout,
   setHigh: React.Dispatch<React.SetStateAction<boolean>>
-): [number, number, number, number, string] {
+): [number, number, number, number] {
   setBegin(false);
   setStart(false);
   clearInterval(animation);
@@ -208,12 +221,12 @@ function handleFailure(
   if (highScore > leaderboard[leaderboard.length - 1].score) {
     setHigh(true);
   }
+  useLastMove.setState({ lastMove: "" });
   return [
     roundNearest50(Math.random() * 500),
     roundNearest50(Math.random() * 550),
     0,
     0,
-    "",
   ];
 }
 

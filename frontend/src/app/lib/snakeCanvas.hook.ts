@@ -1,7 +1,7 @@
 import type { snakeHead, snake, food } from "../lib/snakeLogic";
 import { draw, roundNearest50 } from "../lib/snakeLogic";
 import { useEffect, useRef, useState } from "react";
-import { useHighScore, useLeaderboard } from "../store/store";
+import { useHighScore, useLastMove } from "../store/store";
 
 export function useGameCanvas(): {
   canvasRef: React.RefObject<HTMLCanvasElement | null>;
@@ -13,7 +13,6 @@ export function useGameCanvas(): {
 } {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const ctxRef = useRef<CanvasRenderingContext2D | null>(null);
-  const move = useRef<string>("");
   const [begin, setBegin] = useState<boolean>(false);
   const [start, setStart] = useState<boolean>(false);
   const animation = useRef<NodeJS.Timeout | null>(null);
@@ -65,13 +64,13 @@ export function useGameCanvas(): {
   // biome-ignore lint/correctness/useExhaustiveDependencies: None of specified dependencies are needed, and shouldn't be used since they change every render
   useEffect(() => {
     document.addEventListener("keydown", (e) => {
-      move.current = e.key;
+      useLastMove.setState({ lastMove: e.key });
     });
     const canvas = canvasRef.current;
     if (canvas) {
       ctxRef.current = canvas.getContext("2d");
       if (start) {
-        move.current = "";
+        useLastMove.setState({ lastMove: "" });
         setStart(false);
         setBegin(true);
         setRestart(true);
@@ -84,7 +83,6 @@ export function useGameCanvas(): {
                 food,
                 tail,
                 animation.current,
-                move.current,
                 ctxRef.current,
                 head,
                 setBegin,
@@ -103,7 +101,7 @@ export function useGameCanvas(): {
     }
     return () => {
       document.removeEventListener("keydown", (e) => {
-        move.current = e.key;
+        useLastMove.setState({ lastMove: e.key });
       });
     };
   }, [start]);
