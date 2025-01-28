@@ -74,8 +74,14 @@ app.post("/game", (req, res) => {
   );
   res.send();
   setTimeout(() => {
-    currentGames.splice(currentGames.indexOf(gameID), 1);
-    fs.writeFileSync("games.json", JSON.stringify({ games: currentGames }));
+    const currentCurrentGames = JSON.parse(
+      fs.readFileSync("games.json", "utf8")
+    ).games;
+    currentCurrentGames.splice(currentCurrentGames.indexOf(gameID), 1);
+    fs.writeFileSync(
+      "games.json",
+      JSON.stringify({ games: currentCurrentGames })
+    );
   }, 600000);
 });
 
