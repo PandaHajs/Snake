@@ -1,4 +1,9 @@
-import { useHighScore, useLeaderboard, useLastMove } from "@/app/store/store";
+import {
+  useHighScore,
+  useLeaderboard,
+  useLastMove,
+  useLastViableMove,
+} from "@/app/store/store";
 
 export type snake = {
   radius: number;
@@ -42,7 +47,6 @@ export function draw(
   const sSpacing = 50;
   const illegalStartingMoves = ["ArrowRight", "d", "D"];
   const move = useLastMove.getState().lastMove;
-  let [vx, vy] = handleKey(move) || [0, 0];
   const headF: snakeHead = JSON.parse(JSON.stringify(head));
   const tailF: snake = JSON.parse(JSON.stringify(tail));
   const foodF: food = JSON.parse(JSON.stringify(food));
@@ -52,6 +56,14 @@ export function draw(
   const cumulativeDistancesF: number[] = JSON.parse(
     JSON.stringify(cumulativeDistances)
   );
+
+  let [vx, vy] = handleKey(move) || [0, 0];
+
+  if ((vx !== -headF.vx || vy !== -headF.vy) && (vx !== 0 || vy !== 0)) {
+    useLastViableMove.setState({ lastViableMove: move });
+  }
+  const lastViableMove = useLastViableMove.getState().lastViableMove;
+  [vx, vy] = handleKey(lastViableMove) || [0, 0];
 
   if (
     (vx === 0 && vy === 0) ||

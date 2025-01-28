@@ -1,7 +1,7 @@
 import type { snakeHead, snake, food } from "../lib/snakeLogic";
 import { draw, roundNearest50 } from "../lib/snakeLogic";
 import { useEffect, useRef, useState } from "react";
-import { useHighScore, useLastMove } from "../store/store";
+import { useHighScore, useLastMove, useLastViableMove } from "../store/store";
 
 export function useGameCanvas(): {
   canvasRef: React.RefObject<HTMLCanvasElement | null>;
@@ -71,6 +71,7 @@ export function useGameCanvas(): {
       ctxRef.current = canvas.getContext("2d");
       if (start) {
         useLastMove.setState({ lastMove: "" });
+        useLastViableMove.setState({ lastViableMove: "" });
         setStart(false);
         setBegin(true);
         setRestart(true);

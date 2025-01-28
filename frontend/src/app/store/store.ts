@@ -21,6 +21,11 @@ interface lastMove {
   setLastMove: (lastMove: string) => void;
 }
 
+interface lastViableMove {
+  lastViableMove: string;
+  setLastViableMove: (lastViableMove: string) => void;
+}
+
 export const useHighScore = create<highScore>()((set) => ({
   count: 0,
   resetScore: () => set({ count: 0 }),
@@ -40,4 +45,9 @@ export const useGameID = create<gameID>()((set) => ({
 export const useLastMove = create<lastMove>()((set) => ({
   lastMove: "",
   setLastMove: (lastMove: string) => set({ lastMove }),
+}));
+
+export const useLastViableMove = create<lastViableMove>()((set) => ({
+  lastViableMove: "",
+  setLastViableMove: (lastViableMove: string) => set({ lastViableMove }),
 }));
