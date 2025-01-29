@@ -56,6 +56,16 @@ export function draw(
   const cumulativeDistancesF: number[] = JSON.parse(
     JSON.stringify(cumulativeDistances)
   );
+  if (useHighScore.getState().count === 142 && animation) {
+    [headF.mx, headF.my, headF.vx, headF.vy] = handleFailure(
+      setBegin,
+      setStart,
+      animation,
+      setHigh
+    );
+    [foodF.x, foodF.y] = respawnFood(headF, tailF);
+    return;
+  }
 
   let [vx, vy] = handleKey(move) || [0, 0];
 
