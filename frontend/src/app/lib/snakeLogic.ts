@@ -197,7 +197,7 @@ function respawnFood(head: snakeHead, tail: snake): [number, number] {
   let x: number;
   let y: number;
   do {
-    x = roundNearest50(Math.random() * 500);
+    x = roundNearest50(Math.random() * 550);
     y = roundNearest50(Math.random() * 550);
   } while (
     (x === head.mx && y === head.my) ||
