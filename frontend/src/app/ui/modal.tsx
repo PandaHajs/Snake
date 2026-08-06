@@ -49,7 +49,7 @@ export default function Modal(props: {
   const { mutateAsync } = useMutation({
     mutationFn: async (body: { name: string; score: number }) => {
       const response = await axios.post(
-        "https://api.skowronski.one/update",
+        "https://api.skowronski.one/snake/update",
         body
       );
       return response;
@@ -57,7 +57,7 @@ export default function Modal(props: {
   });
 
   const fetchGameID = async () => {
-    const response = await axios.post("https://api.skowronski.one/game");
+    const response = await axios.post("https://api.skowronski.one/snake/game");
     if (response.status !== 201) {
       throw new Error("Error");
     }
