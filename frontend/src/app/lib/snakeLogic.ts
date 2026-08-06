@@ -240,7 +240,8 @@ function handleFailure(
   clearInterval(animation);
   const highScore = useHighScore.getState().count;
   const leaderboard = useLeaderboard.getState().leaderboard;
-  if (highScore > leaderboard[leaderboard.length - 1].score) {
+  const lowestScore = leaderboard.at(-1)?.score;
+  if (lowestScore === undefined || highScore > lowestScore) {
     setHigh(true);
   }
   useLastMove.setState({ lastMove: "" });
