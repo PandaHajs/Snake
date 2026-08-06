@@ -10,7 +10,7 @@ interface LeaderBoardEntry {
 }
 
 export default function LeaderBoard() {
-  const fetchLeaderBoard = async () => {
+  const fetchLeaderBoard = async (): Promise<LeaderBoardEntry[]> => {
     const response = await axios.get("https://api.skowronski.one/snake/leaderboard");
     if (response.status !== 200) {
       throw new Error("Error fetching data");
@@ -24,11 +24,13 @@ export default function LeaderBoard() {
     refetchInterval: 10000,
   });
 
-  const leaderBoard = useLeaderboard((state) => state.leaderboard);
+  const leaderBoard = useLeaderboard(
+    (state: { leaderboard: LeaderBoardEntry[] }) => state.leaderboard
+  );
 
   useEffect(() => {
     if (status === "success") {
-      useLeaderboard.setState({ leaderboard: JSON.parse(data).leaderboard });
+      useLeaderboard.getState().setLeaderboard(data ?? []);
     }
   }, [status, data]);
 
@@ -39,7 +41,7 @@ export default function LeaderBoard() {
       {status === "error" && <div>Error fetching data</div>}
       {status === "success" && (
         <ol>
-          {leaderBoard.map((entry: LeaderBoardEntry, i) => {
+          {leaderBoard.map((entry: LeaderBoardEntry, i: number) => {
             return (
               <li key={i}>
                 {entry.name} - {entry.score}

@@ -12,8 +12,8 @@ interface leaderboard {
 }
 
 interface gameID {
-  gameID: number;
-  setGameID: (gameID: number) => void;
+  gameID: string;
+  setGameID: (gameID: string) => void;
 }
 
 interface lastMove {
@@ -38,8 +38,8 @@ export const useLeaderboard = create<leaderboard>()((set) => ({
 }));
 
 export const useGameID = create<gameID>()((set) => ({
-  gameID: 0,
-  setGameID: (gameID: number) => set({ gameID }),
+  gameID: "",
+  setGameID: (gameID: string) => set({ gameID }),
 }));
 
 export const useLastMove = create<lastMove>()((set) => ({

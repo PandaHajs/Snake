@@ -4,7 +4,10 @@ import { FormEvent, useEffect, useState } from "react";
 import { useGameID, useHighScore } from "../store/store";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import CryptoJS from "crypto-js";
+
+type GameResponse = {
+  id: string;
+};
 
 export default function Modal(props: {
   setStart: React.Dispatch<React.SetStateAction<boolean>>;
@@ -20,16 +23,15 @@ export default function Modal(props: {
 
   const handleFormSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    const decryptedID = parseInt(
-      CryptoJS.AES.decrypt(gameID.toString(), "very secret yes").toString(
-        CryptoJS.enc.Utf8
-      )
-    );
+
+    if (!gameID) {
+      return;
+    }
 
     const newScore = {
       name: name,
       score: highScore,
-      id: decryptedID,
+      id: gameID,
     };
     new Promise((resolve, reject) => {
       setLoading(true);
@@ -47,7 +49,7 @@ export default function Modal(props: {
   };
 
   const { mutateAsync } = useMutation({
-    mutationFn: async (body: { name: string; score: number }) => {
+    mutationFn: async (body: { name: string; score: number; id: string }) => {
       const response = await axios.post(
         "https://api.skowronski.one/snake/update",
         body
@@ -56,7 +58,7 @@ export default function Modal(props: {
     },
   });
 
-  const fetchGameID = async () => {
+  const fetchGameID = async (): Promise<GameResponse> => {
     const response = await axios.post("https://api.skowronski.one/snake/game");
     if (response.status !== 201) {
       throw new Error("Error");
@@ -72,7 +74,7 @@ export default function Modal(props: {
 
   useEffect(() => {
     if (status === "success") {
-      useGameID.setState({ gameID: data });
+      useGameID.setState({ gameID: data.id });
       props.setStart((prev) => !prev);
     }
   }, [status, data]);
