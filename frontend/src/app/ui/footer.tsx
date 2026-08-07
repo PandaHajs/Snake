@@ -1,5 +1,5 @@
-import styles from "./styles/footer.module.scss";
 import { currentYear } from "../lib/age";
+import styles from "./styles/footer.module.scss";
 
 export default function Footer() {
 	const year: number = currentYear();
