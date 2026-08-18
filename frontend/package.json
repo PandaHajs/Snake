@@ -1,37 +1,33 @@
 {
-  "name": "snake",
-  "version": "0.1.0",
-  "private": true,
-  "scripts": {
-    "dev": "next dev --turbopack",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint"
-  },
-  "dependencies": {
-    "@tanstack/react-query": "^5.101.4",
-    "@vercel/analytics": "^2.0.1",
-    "axios": "^1.19.0",
-    "crypto-js": "^4.2.0",
-    "immer": "^11.1.17",
-    "next": "^16.3.1",
-    "react": "^19.2.8",
-    "react-dom": "^19.2.8",
-    "sass": "^1.102.0",
-    "zustand": "^5.0.15"
-  },
-  "devDependencies": {
-    "@types/crypto-js": "^4.2.2",
-    "@types/node": "^26",
-    "@types/react": "npm:types-react@^19.0.0-alpha.3",
-    "@types/react-dom": "npm:types-react-dom@19.0.0-alpha.3",
-    "cross-env": "^10.1.0",
-    "eslint": "^10.8.1",
-    "eslint-config-next": "16.3.1",
-    "typescript": "^7"
-  },
-  "overrides": {
-    "@types/react": "npm:types-react@19.0.0-alpha.3",
-    "@types/react-dom": "npm:types-react-dom@19.0.0-alpha.3"
-  }
+	"name": "snake",
+	"version": "0.1.0",
+	"private": true,
+	"scripts": {
+		"dev": "next dev --turbopack",
+		"build": "next build",
+		"start": "next start",
+		"lint": "next lint"
+	},
+	"dependencies": {
+		"@tanstack/react-query": "^5.101.4",
+		"@vercel/analytics": "^2.0.1",
+		"axios": "^1.19.0",
+		"crypto-js": "^4.2.0",
+		"immer": "^11.1.17",
+		"next": "^16.3.1",
+		"react": "^19.2.8",
+		"react-dom": "^19.2.8",
+		"sass": "^1.102.0",
+		"zustand": "^5.0.15"
+	},
+	"devDependencies": {
+		"@types/crypto-js": "^4.2.2",
+		"@types/node": "^26",
+		"@types/react": "19.2.18",
+		"@types/react-dom": "19.2.4",
+		"cross-env": "^10.1.0",
+		"eslint": "^10.8.1",
+		"eslint-config-next": "16.3.1",
+		"typescript": "^7"
+	}
 }
