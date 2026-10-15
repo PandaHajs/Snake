@@ -16,6 +16,7 @@ export function useGameCanvas(): {
 	const [begin, setBegin] = useState<boolean>(false);
 	const [start, setStart] = useState<boolean>(false);
 	const animation = useRef<NodeJS.Timeout | null>(null);
+	const animationFrame = useRef<number | null>(null);
 	const [restart, setRestart] = useState<boolean>(false);
 	const incHighscore = useHighScore((state) => state.inc);
 	const resetHighscore = useHighScore((state) => state.resetScore);
@@ -61,15 +62,35 @@ export function useGameCanvas(): {
 		{ x: head.mx + 5, y: head.my },
 		{ x: head.mx, y: head.my },
 	];
-	// biome-ignore lint/correctness/useExhaustiveDependencies: None of specified dependencies are needed, and shouldn't be used since they change every render
 	useEffect(() => {
-		document.addEventListener("keydown", (e) => {
+		const handleKeyDown = (e: KeyboardEvent) => {
 			useLastMove.setState({ lastMove: e.key });
-		});
+		};
+		document.addEventListener("keydown", handleKeyDown);
+		return () => {
+			document.removeEventListener("keydown", handleKeyDown);
+			if (animation.current !== null) {
+				clearInterval(animation.current);
+				animation.current = null;
+			}
+			if (animationFrame.current !== null) {
+				cancelAnimationFrame(animationFrame.current);
+				animationFrame.current = null;
+			}
+		};
+	}, []);
+
+	// biome-ignore lint/correctness/useExhaustiveDependencies: Game state belongs to the interval created for each start.
+	useEffect(() => {
 		const canvas = canvasRef.current;
 		if (canvas) {
 			ctxRef.current = canvas.getContext("2d");
 			if (start) {
+				if (animation.current !== null) clearInterval(animation.current);
+				if (animationFrame.current !== null) {
+					cancelAnimationFrame(animationFrame.current);
+					animationFrame.current = null;
+				}
 				useLastMove.setState({ lastMove: "" });
 				useLastViableMove.setState({ lastViableMove: "" });
 				setStart(false);
@@ -78,7 +99,9 @@ export function useGameCanvas(): {
 				setHigh(false);
 				resetHighscore();
 				animation.current = setInterval(() => {
-					requestAnimationFrame(() => {
+					if (animationFrame.current !== null) return;
+					animationFrame.current = requestAnimationFrame(() => {
+						animationFrame.current = null;
 						if (ctxRef.current)
 							result = draw(
 								food,
@@ -100,11 +123,6 @@ export function useGameCanvas(): {
 				}, 1000 / 60);
 			}
 		}
-		return () => {
-			document.removeEventListener("keydown", (e) => {
-				useLastMove.setState({ lastMove: e.key });
-			});
-		};
 	}, [start]);
 	return { canvasRef, setStart, restart, begin, high, setHigh };
 }

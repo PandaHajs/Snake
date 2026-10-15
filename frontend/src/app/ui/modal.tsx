@@ -19,6 +19,7 @@ export default function Modal(props: {
 	const [name, setName] = useState("");
 	const highScore = useHighScore((state) => state.count);
 	const [loading, setLoading] = useState(false);
+	const [submitError, setSubmitError] = useState("");
 	const gameID = useGameID((state) => state.gameID);
 
 	const handleFormSubmit = async (e: FormEvent) => {
@@ -33,19 +34,20 @@ export default function Modal(props: {
 			score: highScore,
 			id: gameID,
 		};
-		new Promise((resolve, reject) => {
-			setLoading(true);
-			mutateAsync(newScore).then((status) => {
-				if (status.status !== 201) {
-					reject("Error");
-				}
-				resolve("Success");
-			});
-		}).then(() => {
-			setLoading(false);
+		setLoading(true);
+		setSubmitError("");
+		try {
+			const response = await mutateAsync(newScore);
+			if (response.status !== 201) {
+				throw new Error("Error submitting score");
+			}
 			props.setHigh(false);
 			setName("");
-		});
+		} catch {
+			setSubmitError("Could not submit your score. Please try again.");
+		} finally {
+			setLoading(false);
+		}
 	};
 
 	const { mutateAsync } = useMutation({
@@ -101,6 +103,7 @@ export default function Modal(props: {
 						<button type="submit" disabled={loading}>
 							Submit
 						</button>
+						{submitError && <p role="alert">{submitError}</p>}
 					</form>
 					<button type="button" onClick={() => props.setHigh(false)}>
 						Skip

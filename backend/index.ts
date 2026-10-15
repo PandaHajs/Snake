@@ -76,7 +76,9 @@ app.post("/game", (req, res) => {
 		const currentCurrentGames = JSON.parse(
 			fs.readFileSync("games.json", "utf8"),
 		).games;
-		currentCurrentGames.splice(currentCurrentGames.indexOf(gameID), 1);
+		const gameIndex = currentCurrentGames.indexOf(gameID);
+		if (gameIndex === -1) return;
+		currentCurrentGames.splice(gameIndex, 1);
 		fs.writeFileSync(
 			"games.json",
 			JSON.stringify({ games: currentCurrentGames }),
